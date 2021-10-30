@@ -1,0 +1,72 @@
+:root {
+    --primary: #4caf50;
+    --input: #2196f3;
+    --output: #f44336;
+}
+
+html {
+    background-color: rgb(240, 240, 240);
+}
+
+.panel {
+    position:absolute;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    min-width: 100px;
+    min-height: 60px;
+    border-radius: 5px;
+    padding: 5px 5px 0px 5px;
+}
+
+.input-number {
+    max-width: 80px;
+}
+
+.panel-title {
+    background-color: var(--primary);
+    border-radius: 5px 5px 0px 0px;
+    color: white;
+    min-width: 100px;
+    min-height: 30px;
+    text-align: center;
+    line-height: 30px;
+    margin: -5px -5px 5px -5px;
+    padding: 0px 15px;
+    cursor:  move;
+    font-family: sans-serif;
+}
+
+.input, .output{
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.setting{
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.input{
+    background-color: var(--input);
+    cursor: pointer;
+}
+
+.output{
+    background-color: var(--output);
+    cursor: grab;
+}
+
+#lines {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    pointer-events: none;
+}
