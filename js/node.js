@@ -339,12 +339,70 @@ class AudioSourceView extends AudioNodeView {
                         source.loop = true;
                         source.buffer = this.buffer;
                         this.removeSetting('Node');
-                        this.addNewSetting('Node', '', null, null, null, source)
+                        this.addNewSetting('Node', '', null, null, null, source);
                     });
                 };
             }
         });
         this.panel.appendChild(input);
+    }
+}
+
+class AudioRecorderView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Audio Recorder');
+        this.chunks = [];
+        this.rec = document.createElement('button');
+        this.rec.innerText = 'Record';
+        this.dest = ctx.createMediaStreamDestination();
+        this.mediaRecorder = new MediaRecorder(this.dest.stream, { mimeType: "video/webm;codecs=pcm" });
+
+        this.addNewSetting('Node', '', null, this.dest);
+
+        var chunks = [];
+        let clicked = false;
+        this.rec.addEventListener("click", e => {
+            if (!clicked) {
+                console.log(this.mediaRecorder);
+
+                this.mediaRecorder.start();
+                e.target.textContent = "Stop recording";
+                clicked = true;
+            } else {
+                this.mediaRecorder.stop();
+                e.target.disabled = true;
+            }
+        });
+        this.mediaRecorder.ondataavailable = function (evt) {
+            chunks.push(evt.data);
+        };
+
+        this.mediaRecorder.onstop = function (evt) {
+            let aud = document.querySelector("audio");
+            aud.src = URL.createObjectURL(new Blob(chunks), { 'type': 'video/webm;codecs=pcm' });
+            aud.onloadedmetadata = function () {
+                if (aud.duration === Infinity) {
+                    aud.currentTime = 1e101;
+                    aud.ontimeupdate = function () {
+                        this.ontimeupdate = () => {
+                            return;
+                        }
+                        aud.currentTime = 0.1;
+                    }
+                }
+            }
+        };
+
+        this.panel.appendChild(this.rec);
+        let audio = document.createElement('audio');
+        audio.controls = true;
+        this.panel.appendChild(audio);
+
+        this.record();
+    }
+
+    record() {
     }
 }
 
@@ -366,6 +424,9 @@ document.addEventListener('keypress', e => {
             break;
         case 'a':
             new AudioSourceView();
+            break;
+        case 'r':
+            new AudioRecorderView();
             break;
         default:
             break;
