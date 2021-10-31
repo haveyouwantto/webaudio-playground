@@ -351,35 +351,45 @@ class AudioRecorderView extends AudioNodeView {
     constructor() {
         super();
         this.setTitle('Audio Recorder');
-        this.chunks = [];
         this.rec = document.createElement('button');
         this.rec.innerText = 'Record';
         this.dest = ctx.createMediaStreamDestination();
-        this.mediaRecorder = new MediaRecorder(this.dest.stream, { mimeType: "video/webm;codecs=pcm" });
-
         this.addNewSetting('Node', '', null, this.dest);
 
-        var chunks = [];
+        let audio = document.createElement('audio');
+        audio.controls = true;
+
         let clicked = false;
+        let mediaRecorder;
         this.rec.addEventListener("click", e => {
             if (!clicked) {
-                console.log(this.mediaRecorder);
-
-                this.mediaRecorder.start();
+                audio.src = '';
                 e.target.textContent = "Stop recording";
-                clicked = true;
+                mediaRecorder = this.record();
             } else {
-                this.mediaRecorder.stop();
-                e.target.disabled = true;
+                e.target.textContent = "Record";
+                mediaRecorder.stop();
             }
+            clicked = !clicked;
         });
-        this.mediaRecorder.ondataavailable = function (evt) {
+
+        this.panel.appendChild(this.rec);
+        this.panel.appendChild(audio);
+
+        this.record();
+    }
+
+    record() {
+        var chunks = [];
+        let mediaRecorder = new MediaRecorder(this.dest.stream, { mimeType: "video/webm;codecs=pcm" });
+
+        mediaRecorder.ondataavailable = function (evt) {
             chunks.push(evt.data);
         };
 
         let panel = this.panel;
 
-        this.mediaRecorder.onstop = function (evt) {
+        mediaRecorder.onstop = function (evt) {
             let aud = panel.querySelector("audio");
             aud.src = URL.createObjectURL(new Blob(chunks), { 'type': 'video/webm;codecs=pcm' });
             aud.onloadedmetadata = function () {
@@ -394,16 +404,8 @@ class AudioRecorderView extends AudioNodeView {
                 }
             }
         };
-
-        this.panel.appendChild(this.rec);
-        let audio = document.createElement('audio');
-        audio.controls = true;
-        this.panel.appendChild(audio);
-
-        this.record();
-    }
-
-    record() {
+        mediaRecorder.start();
+        return mediaRecorder;
     }
 }
 
