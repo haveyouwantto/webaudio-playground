@@ -152,7 +152,6 @@ class Setting {
                     }
                 }
                 field.addEventListener('change', e => {
-                    console.log(1);
                     valChange['type'] = field.value;
                 });
                 field.appendChild(src);
@@ -186,9 +185,7 @@ class Setting {
         let pos1 = this.outputTag.getBoundingClientRect();
         let pos2 = node.inputTag.getBoundingClientRect();
         this.outputLines[node.id] = drawLine(pos1.x + pos1.width / 2, pos1.y + pos1.height / 2, pos2.x + pos2.width / 2, pos2.y + pos2.height / 2);
-        console.log(this.outputLines);
-
-        console.log(`Connected ${this.name} to ${node.name}`);
+        console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
         try {
             this.output.start();
         } catch (e) {
@@ -205,12 +202,16 @@ class Setting {
         this.output.disconnect(node.input);
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
         node.field && (node.field.disabled = false);
-        console.log(`Disconnected ${this.name} from ${node.name}`);
+        console.log(`Disconnected ${this.output.constructor.name} from ${node.input.constructor.name}`);
     }
 
     destroy() {
         this.disconnectAll();
-        this.output.stop();
+        try {
+            this.output.stop();
+        } catch (e) {
+            console.warn(e);
+        }
     }
 
     updateLines(stop = false) {
@@ -327,24 +328,22 @@ class AudioSourceView extends AudioNodeView {
 
     uploadBtn() {
         let input = document.createElement('input');
+        let aud = document.createElement('audio');
+        aud.controls = true;
+        aud.preload = true;
+        this.panel.appendChild(aud);
+        let node = ctx.createMediaElementSource(aud);
+
         input.type = 'file';
         input.addEventListener('change', e => {
             if (input.files[0]) {
-                let fr = new FileReader();
-                fr.readAsArrayBuffer(input.files[0]);
-                fr.onloadend = () => {
-                    ctx.decodeAudioData(fr.result).then(buffer => {
-                        this.buffer = buffer;
-                        let source = ctx.createBufferSource();
-                        source.loop = true;
-                        source.buffer = this.buffer;
-                        this.removeSetting('Node');
-                        this.addNewSetting('Node', '', null, null, null, source);
-                    });
-                };
+                let url = URL.createObjectURL(e.currentTarget.files[0]);
+                aud.src = url;
             }
         });
         this.panel.appendChild(input);
+
+        this.addNewSetting('Node', '', null, null, null, node);
     }
 }
 
@@ -378,8 +377,10 @@ class AudioRecorderView extends AudioNodeView {
             chunks.push(evt.data);
         };
 
+        let panel = this.panel;
+
         this.mediaRecorder.onstop = function (evt) {
-            let aud = document.querySelector("audio");
+            let aud = panel.querySelector("audio");
             aud.src = URL.createObjectURL(new Blob(chunks), { 'type': 'video/webm;codecs=pcm' });
             aud.onloadedmetadata = function () {
                 if (aud.duration === Infinity) {
@@ -408,7 +409,12 @@ class AudioRecorderView extends AudioNodeView {
 
 let out = new AudioOutputNodeView();
 
+let suspend = true;
 document.addEventListener('keypress', e => {
+    if (suspend) { 
+        ctx.resume(); 
+        suspend = false; 
+    }
     switch (e.key) {
         case 'o':
             new OscillatorNodeView();
