@@ -45,18 +45,18 @@ html {
     margin-right: 5px;
 }
 
-.setting{
-    display: flex;
-    align-items: center;
+.setting {
     margin-bottom: 5px;
 }
 
 .input{
+    float: left;
     background-color: var(--input);
     cursor: pointer;
 }
 
 .output{
+    float: right;
     background-color: var(--output);
     cursor: grab;
 }
@@ -73,4 +73,20 @@ html {
 
 audio {
     display: block;
+}
+
+#plus {
+    position: fixed;
+    border-radius: 999px;
+    background-color: var(--primary);
+    width: 75px;
+    height: 75px;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    text-anchor: middle;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    top: calc(100vh - 100px);
+    left: calc(100vw - 100px);
+    cursor: pointer;
 }

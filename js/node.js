@@ -11,7 +11,7 @@ function drawLine(x1, y1, x2, y2) {
     line.setAttribute('y1', y1);
     line.setAttribute('x2', x2);
     line.setAttribute('y2', y2);
-    line.setAttribute('stroke', 'black');
+    line.setAttribute('stroke', '#404040');
     line.setAttribute('stroke-width', 2);
     document.querySelector('#lines').appendChild(line);
     return line;
@@ -298,7 +298,11 @@ class DynamicsCompressorNodeView extends AudioNodeView {
     constructor() {
         super();
         this.setTitle('Compressor');
-        this.node = new DynamicsCompressorNode(ctx);
+        this.node = ctx.createDynamicsCompressor();
+        this.addNewSetting('Attack', 'num', this.node.attack.value, this.node.attack);
+        this.addNewSetting('Release', 'num', this.node.release.value, this.node.release);
+        this.addNewSetting('Knee', 'num', this.node.knee.value, this.node.knee);
+        this.addNewSetting('Ratio', 'num', this.node.ratio.value, this.node.ratio);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
     }
 }
@@ -307,7 +311,7 @@ class PannerNodeView extends AudioNodeView {
     constructor() {
         super();
         this.setTitle('Panner');
-        this.node = new PannerNode(ctx);
+        this.node = ctx.createPanner();
         this.addNewSetting('Position X', 'num', this.node.positionX.value, this.node.positionX);
         this.addNewSetting('Position Y', 'num', this.node.positionY.value, this.node.positionY);
         this.addNewSetting('Position Z', 'num', this.node.positionZ.value, this.node.positionZ);
@@ -409,13 +413,23 @@ class AudioRecorderView extends AudioNodeView {
     }
 }
 
+class DelayNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Delay');
+        this.node = ctx.createDelay();
+        this.addNewSetting('Delay Time', 'num', this.node.delayTime.value, this.node.delayTime);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
 let out = new AudioOutputNodeView();
 
 let suspend = true;
 document.addEventListener('keypress', e => {
-    if (suspend) { 
-        ctx.resume(); 
-        suspend = false; 
+    if (suspend) {
+        ctx.resume();
+        suspend = false;
     }
     switch (e.key) {
         case 'o':
@@ -435,6 +449,9 @@ document.addEventListener('keypress', e => {
             break;
         case 'r':
             new AudioRecorderView();
+            break;
+        case 'd':
+            new DelayNodeView();
             break;
         default:
             break;
