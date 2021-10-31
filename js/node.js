@@ -385,7 +385,7 @@ class AudioRecorderView extends AudioNodeView {
 
     record() {
         var chunks = [];
-        let mediaRecorder = new MediaRecorder(this.dest.stream, { mimeType: "video/webm;codecs=pcm" });
+        let mediaRecorder = new MediaRecorder(this.dest.stream, { 'mimeType': "video/webm;codecs=pcm" });
 
         mediaRecorder.ondataavailable = function (evt) {
             chunks.push(evt.data);
@@ -395,7 +395,7 @@ class AudioRecorderView extends AudioNodeView {
 
         mediaRecorder.onstop = function (evt) {
             let aud = panel.querySelector("audio");
-            aud.src = URL.createObjectURL(new Blob(chunks), { 'type': 'video/webm;codecs=pcm' });
+            aud.src = URL.createObjectURL(new Blob(chunks, { 'type': "video/webm;codecs=pcm" }));
             aud.onloadedmetadata = function () {
                 if (aud.duration === Infinity) {
                     aud.currentTime = 1e101;
