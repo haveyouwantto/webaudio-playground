@@ -12,7 +12,7 @@ html {
     position:absolute;
     background-color: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    min-width: 100px;
+    min-width: max-content;
     min-height: 60px;
     border-radius: 5px;
     padding: 5px 5px 0px 5px;
@@ -20,6 +20,7 @@ html {
 
 .input-number {
     max-width: 80px;
+    float: right;
 }
 
 .panel-title {
@@ -47,6 +48,7 @@ html {
 
 .setting {
     margin-bottom: 5px;
+    text-align: center;
 }
 
 .input{

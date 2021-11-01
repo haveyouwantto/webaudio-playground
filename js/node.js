@@ -32,12 +32,12 @@ class AudioNodeView {
         this.innerDiv.setAttribute('draggable', true);
         this.innerDiv.addEventListener('dragstart', e => {
             let pos = this.panel.getBoundingClientRect();
-            this.dragX = e.clientX - pos.x;
-            this.dragY = e.clientY - pos.y;
+            this.dragX = e.pageX - pos.x;
+            this.dragY = e.pageY - pos.y;
         });
         this.innerDiv.addEventListener('dragend', e => {
-            this.panel.style.left = (e.clientX - this.dragX) + 'px';
-            this.panel.style.top = (e.clientY - this.dragY) + 'px';
+            this.panel.style.left = (e.pageX - this.dragX) + 'px';
+            this.panel.style.top = (e.pageY - this.dragY) + 'px';
             for (const setting in this.settings) {
                 const element = this.settings[setting];
                 element.updateLines();
@@ -201,7 +201,9 @@ class Setting {
 
         this.output.disconnect(node.input);
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
-        node.field && (node.field.disabled = false);
+        console.log(node.inputs);
+        
+        if (this.inputs.length == 0 && node.field) (node.field.disabled = false);
         console.log(`Disconnected ${this.output.constructor.name} from ${node.input.constructor.name}`);
     }
 
