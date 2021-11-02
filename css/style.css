@@ -21,6 +21,7 @@ html {
 .input-number {
     max-width: 80px;
     float: right;
+    margin-left: 5px;
 }
 
 .panel-title {

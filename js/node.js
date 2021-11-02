@@ -122,7 +122,7 @@ class Setting {
             this.inputTag = inputTag;
         }
 
-        this.div.appendChild(document.createTextNode(name + ' : '))
+        this.div.appendChild(document.createTextNode(name));
         let field;
         switch (type) {
             case 'num':
@@ -202,7 +202,7 @@ class Setting {
         this.output.disconnect(node.input);
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
         console.log(node.inputs);
-        
+
         if (this.inputs.length == 0 && node.field) (node.field.disabled = false);
         console.log(`Disconnected ${this.output.constructor.name} from ${node.input.constructor.name}`);
     }
@@ -425,6 +425,16 @@ class DelayNodeView extends AudioNodeView {
     }
 }
 
+class StereoPannerNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Stereo Panner');
+        this.node = ctx.createStereoPanner();
+        this.addNewSetting('Pan', 'num', this.node.pan.value, this.node.pan);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
 let out = new AudioOutputNodeView();
 
 let suspend = true;
@@ -454,6 +464,9 @@ document.addEventListener('keypress', e => {
             break;
         case 'd':
             new DelayNodeView();
+            break;
+        case 's':
+            new StereoPannerNodeView();
             break;
         default:
             break;
