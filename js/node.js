@@ -435,6 +435,20 @@ class StereoPannerNodeView extends AudioNodeView {
     }
 }
 
+class BiquadFilterNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Biquad Filter');
+        this.node = ctx.createBiquadFilter();
+        this.addNewSetting('Frequency', 'num', this.node.frequency.value, this.node.frequency);
+        this.addNewSetting('Detune', 'num', this.node.detune.value, this.node.detune);
+        this.addNewSetting('Q', 'num', this.node.Q.value, this.node.Q);
+        this.addNewSetting('Gain', 'num', this.node.gain.value, this.node.gain);
+        this.addNewSetting('Type', 'list', ['lowpass', 'highpass', 'bandpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass'], null, this.node);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
 let out = new AudioOutputNodeView();
 
 let suspend = true;
@@ -467,6 +481,9 @@ document.addEventListener('keypress', e => {
             break;
         case 's':
             new StereoPannerNodeView();
+            break;
+        case 'b':
+            new BiquadFilterNodeView();
             break;
         default:
             break;
