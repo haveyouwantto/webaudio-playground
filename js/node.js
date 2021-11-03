@@ -203,7 +203,7 @@ class Setting {
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
         console.log(node.inputs);
 
-        if (this.inputs.length == 0 && node.field) (node.field.disabled = false);
+        if (this.inputs.length == 0) (node.field.disabled = false);
         console.log(`Disconnected ${this.output.constructor.name} from ${node.input.constructor.name}`);
     }
 
@@ -449,6 +449,146 @@ class BiquadFilterNodeView extends AudioNodeView {
     }
 }
 
+class WaveShaperNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Wave Shaper');
+        this.node = ctx.createWaveShaper();
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
+class WavesView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Show Waves');
+        this.node = ctx.createAnalyser();
+        this.canvas = document.createElement('canvas');
+        this.panel.appendChild(this.canvas);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+        this.update();
+    }
+
+    update() {
+        let buffer = new Float32Array(this.canvas.width * 2);
+        let canvas = this.canvas;
+        let node = this.node;
+        let canvasCtx = this.canvas.getContext('2d');
+        function draw() {
+            requestAnimationFrame(draw);
+            node.getFloatTimeDomainData(buffer);
+            canvasCtx.fillStyle = 'rgb(240, 240, 240)';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.lineWidth = 1;
+            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+            canvasCtx.beginPath();
+
+            var sliceWidth = canvas.width / buffer.length;
+            var x = 0;
+
+            for (var i = 0; i < buffer.length; i++) {
+                var v = buffer[i] * canvas.height / 2;
+                var y = canvas.height / 2 + v;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+            canvasCtx.stroke();
+        };
+        draw();
+    }
+}
+
+class FrequencyView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('FFT Frequency');
+        this.node = ctx.createAnalyser();
+        this.canvas = document.createElement('canvas');
+        this.panel.appendChild(this.canvas);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+        this.update();
+        this.canvas.addEventListener('mousedown', e => {
+            alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+        });
+    }
+
+    update() {
+        let buffer = new Float32Array(this.node.frequencyBinCount);
+        let canvas = this.canvas;
+        let node = this.node;
+        let canvasCtx = this.canvas.getContext('2d');
+        function draw() {
+            requestAnimationFrame(draw);
+            node.getFloatFrequencyData(buffer);
+
+            canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const barWidth = buffer.length / canvas.width;
+            let posX = 0;
+            for (let i = 0; i < buffer.length; i += barWidth) {
+                const barHeight = buffer[parseInt(i)] + canvas.height;
+                canvasCtx.fillStyle = 'rgb(' + Math.floor(barHeight / canvas.height * 255) + ', 0, 255)';
+                canvasCtx.fillRect(posX, canvas.height - barHeight, 1, barHeight);
+                posX++;
+            }
+        };
+        draw();
+    }
+}
+
+class SpectrumView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('FFT Spectrum');
+        this.node = ctx.createAnalyser();
+        this.canvas = document.createElement('canvas');
+        this.panel.appendChild(this.canvas);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+        this.update();
+        this.canvas.addEventListener('mousedown', e => {
+            alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+        });
+    }
+
+    update() {
+        let buffer = new Float32Array(this.node.frequencyBinCount);
+        let canvas = this.canvas;
+        let node = this.node;
+        let canvasCtx = this.canvas.getContext('2d');
+        let y = 0;
+        let canvas2 = document.createElement('canvas');
+
+        canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+        function draw() {
+            requestAnimationFrame(draw);
+            node.getFloatFrequencyData(buffer);
+
+            canvas2.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height);
+
+            const barWidth = buffer.length / canvas.width;
+            let posX = 0;
+            for (let i = 0; i < buffer.length; i += barWidth) {
+                const barHeight = buffer[parseInt(i)] + canvas.height;
+                let color = Math.floor(barHeight / canvas.height * 255);
+                canvasCtx.fillStyle = `rgb(${color},${color},${color})`;
+                canvasCtx.fillRect(posX, y % canvas.height, 1, 1);
+                posX++;
+            }
+            canvasCtx.drawImage(canvas2, 0, 1, canvas.width, canvas.height);
+        };
+        draw();
+    }
+}
+
 let out = new AudioOutputNodeView();
 
 let suspend = true;
@@ -470,7 +610,7 @@ document.addEventListener('keypress', e => {
         case 'p':
             new PannerNodeView();
             break;
-        case 'a':
+        case 's':
             new AudioSourceView();
             break;
         case 'r':
@@ -479,11 +619,23 @@ document.addEventListener('keypress', e => {
         case 'd':
             new DelayNodeView();
             break;
-        case 's':
+        case 't':
             new StereoPannerNodeView();
             break;
         case 'b':
             new BiquadFilterNodeView();
+            break;
+        // case 'w':
+        //     new WaveShaperNodeView();
+        //     break;
+        case 'w':
+            new WavesView();
+            break;
+        case 'f':
+            new FrequencyView();
+            break;
+        case 'h':
+            new SpectrumView();
             break;
         default:
             break;
