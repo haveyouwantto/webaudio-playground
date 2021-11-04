@@ -634,6 +634,23 @@ class SpectrumView extends AudioNodeView {
     }
 }
 
+class NoiseGeneratorView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Noise Generator');
+        this.node = ctx.createScriptProcessor(256, 0, 1);
+        this.addNewSetting('Node', '', null, null, null, this.node);
+        this.node.onaudioprocess = e => {
+            var out = e.outputBuffer;
+            for (var channel = 0; channel < out.numberOfChannels; channel++) {
+                var data = out.getChannelData(channel);
+                for (var sample = 0; sample < out.length; sample++) {
+                    data[sample] = Math.random() * 2 - 1;
+                }
+            }
+        }
+    }
+}
 let out = new AudioOutputNodeView();
 
 let suspend = true;
@@ -681,6 +698,9 @@ document.addEventListener('keypress', e => {
             break;
         case 'h':
             new SpectrumView();
+            break;
+        case 'n':
+            new NoiseGeneratorView();
             break;
         default:
             break;
