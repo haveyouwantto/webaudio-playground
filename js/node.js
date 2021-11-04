@@ -17,6 +17,49 @@ function drawLine(x1, y1, x2, y2) {
     return line;
 }
 
+
+let palette = [[0, 0, 0], [75, 0, 159], [104, 0, 251], [131, 0, 255], [155, 18, 157], [175, 37, 0], [191, 59, 0], [206, 88, 0], [223, 132, 0], [240, 188, 0], [255, 252, 0]];
+
+function add(v1, v2) {
+    return [v1[0] + v2[0], v1[1] + v2[1], v1[2] + v2[2]];
+}
+
+function sub(v1, v2) {
+    return [v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]];
+}
+
+function mul(v1, mul) {
+    return [v1[0] * mul, v1[1] * mul, v1[2] * mul];
+}
+
+function colorTrans(prog) {
+    if (prog < 0) return formatColor(palette[0]);
+    else if (prog >= 1) return formatColor(palette[palette.length - 1]);
+    let i = parseInt(prog * (palette.length - 1));
+    let v1 = palette[i];
+    let v2 = palette[i + 1];
+
+    try {
+        let delta = sub(v2, v1);
+        let percent = (prog / (1 / (palette.length - 1)));
+        let int = parseInt(percent);
+        percent -= int;
+        let adv = mul(delta, percent);
+        let result = add(v1, adv);
+        return formatColor(result);
+    } catch (error) {
+        // console.log(i, v1, v2);
+        // console.error(error);
+    }
+}
+
+function formatColor(v) {
+    return `rgb(${v[0]},${v[1]},${v[2]})`;
+}
+
+colorTrans(0.5);
+colorTrans(0.6);
+
 class AudioNodeView {
     constructor(x = 8, y = 8, removeable = true) {
         this.panel = document.createElement('div');
@@ -520,13 +563,13 @@ class FrequencyView extends AudioNodeView {
     }
 
     update() {
-        let buffer = new Float32Array(this.node.frequencyBinCount);
+        let buffer = new Uint8Array(this.node.frequencyBinCount);
         let canvas = this.canvas;
         let node = this.node;
         let canvasCtx = this.canvas.getContext('2d');
         function draw() {
             requestAnimationFrame(draw);
-            node.getFloatFrequencyData(buffer);
+            node.getByteFrequencyData(buffer);
 
             canvasCtx.fillStyle = 'rgb(0, 0, 0)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -534,8 +577,9 @@ class FrequencyView extends AudioNodeView {
             const barWidth = buffer.length / canvas.width;
             let posX = 0;
             for (let i = 0; i < buffer.length; i += barWidth) {
-                const barHeight = buffer[parseInt(i)] + canvas.height;
-                canvasCtx.fillStyle = 'rgb(' + Math.floor(barHeight / canvas.height * 255) + ', 0, 255)';
+                let barHeight = buffer[parseInt(i)] / 255 * canvas.height;
+                if (barHeight < 0) barHeight = 0;
+                canvasCtx.fillStyle = colorTrans(barHeight / canvas.height);
                 canvasCtx.fillRect(posX, canvas.height - barHeight, 1, barHeight);
                 posX++;
             }
@@ -559,7 +603,7 @@ class SpectrumView extends AudioNodeView {
     }
 
     update() {
-        let buffer = new Float32Array(this.node.frequencyBinCount);
+        let buffer = new Uint8Array(this.node.frequencyBinCount);
         let canvas = this.canvas;
         let node = this.node;
         let canvasCtx = this.canvas.getContext('2d');
@@ -570,16 +614,16 @@ class SpectrumView extends AudioNodeView {
         canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
         function draw() {
             requestAnimationFrame(draw);
-            node.getFloatFrequencyData(buffer);
+            node.getByteFrequencyData(buffer);
 
             canvas2.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height);
 
             const barWidth = buffer.length / canvas.width;
             let posX = 0;
             for (let i = 0; i < buffer.length; i += barWidth) {
-                const barHeight = buffer[parseInt(i)] + canvas.height;
-                let color = Math.floor(barHeight / canvas.height * 255);
-                canvasCtx.fillStyle = `rgb(${color},${color},${color})`;
+                let barHeight = buffer[parseInt(i)] / 255 * canvas.height;
+                if (barHeight < 0) barHeight = 0;
+                canvasCtx.fillStyle = colorTrans(barHeight / canvas.height);
                 canvasCtx.fillRect(posX, y % canvas.height, 1, 1);
                 posX++;
             }
