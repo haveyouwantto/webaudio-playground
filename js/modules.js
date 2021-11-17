@@ -16,7 +16,6 @@ class AbsoluteValueProcessor extends AudioWorkletProcessor {
         const input = inputs[0];
         for (let i = 0; i < input.length; i++) {
             let channel = input[i];
-            console.log(input, output);
             for (let j = 0; j < channel.length; j++) {
                 output[i][j] = Math.abs(input[i][j]);
             }
