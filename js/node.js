@@ -1,8 +1,11 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 let ctx = new AudioContext();
+ctx.audioWorklet.addModule('js/modules.js').then(() => {
+
+});
 
 let settings = {};
-let nodes = [];
+let nodes = new Set();
 
 function drawLine(x1, y1, x2, y2) {
     var svgns = "http://www.w3.org/2000/svg";
@@ -88,21 +91,26 @@ class AudioNodeView {
             }
         });
         if (removeable) this.innerDiv.addEventListener('dblclick', e => {
-            for (const e in this.settings) {
-                if (Object.hasOwnProperty.call(this.settings, e)) {
-                    const element = this.settings[e];
-                    element.disconnectAll();
-                }
-            }
-            document.querySelector('body').removeChild(this.panel);
+            this.remove();
         });
         this.setTitle('Audio Node');
         this.panel.appendChild(this.innerDiv);
 
         document.querySelector('body').appendChild(this.panel);
-        nodes.push(this);
+        nodes.add(this)
 
         this.settings = {};
+    }
+
+    remove() {
+        for (const e in this.settings) {
+            if (Object.hasOwnProperty.call(this.settings, e)) {
+                const element = this.settings[e];
+                element.disconnectAll();
+            }
+        }
+        document.querySelector('body').removeChild(this.panel);
+        nodes.delete(this);
     }
 
     setTitle(title) {
@@ -224,7 +232,6 @@ class Setting {
         this.outputs.push(node);
         node.inputs.push(this);
         this.output.connect(node.input);
-        node.field && (node.field.disabled = true);
 
         let pos1 = this.outputTag.getBoundingClientRect();
         let pos2 = node.inputTag.getBoundingClientRect();
@@ -247,7 +254,6 @@ class Setting {
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
         console.log(node.inputs);
 
-        if (this.inputs.length == 0) (node.field.disabled = false);
         console.log(`Disconnected ${this.output.constructor.name} from ${node.input.constructor.name}`);
     }
 
@@ -638,19 +644,35 @@ class NoiseGeneratorView extends AudioNodeView {
     constructor() {
         super();
         this.setTitle('Noise Generator');
-        this.node = ctx.createScriptProcessor(256, 0, 1);
+        this.node = new AudioWorkletNode(ctx, 'white-noise');
         this.addNewSetting('Node', '', null, null, null, this.node);
-        this.node.onaudioprocess = e => {
-            var out = e.outputBuffer;
-            for (var channel = 0; channel < out.numberOfChannels; channel++) {
-                var data = out.getChannelData(channel);
-                for (var sample = 0; sample < out.length; sample++) {
-                    data[sample] = Math.random() * 2 - 1;
-                }
-            }
-        }
     }
 }
+
+class AbsoluteValueView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Absolute Value');
+        this.node = new AudioWorkletNode(ctx, "absolute-value");
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
+function export1() {
+    let map = [];
+    for (const node of nodes) {
+        map.push({
+            "type": node.constructor.name,
+            "x": node.dragX,
+            "y": node.dragY,
+            "settings": {
+
+            }
+        });
+    }
+    return map;
+}
+
 let out = new AudioOutputNodeView();
 
 let suspend = true;
@@ -701,6 +723,9 @@ document.addEventListener('keypress', e => {
             break;
         case 'n':
             new NoiseGeneratorView();
+            break;
+        case 'v':
+            new AbsoluteValueView();
             break;
         default:
             break;
