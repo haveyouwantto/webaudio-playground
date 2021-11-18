@@ -658,6 +658,17 @@ class AbsoluteValueView extends AudioNodeView {
     }
 }
 
+class AudioInputNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Audio Input');
+        navigator.mediaDevices.getUserMedia({ audio: { sampleRate: ctx.sampleRate }, video: false }).then(stream => {
+            this.node = ctx.createMediaStreamSource(stream);
+            this.addNewSetting('Node', '', null, null, null, this.node);
+        });
+    }
+}
+
 function export1() {
     let map = [];
     for (const node of nodes) {
@@ -726,6 +737,9 @@ document.addEventListener('keypress', e => {
             break;
         case 'v':
             new AbsoluteValueView();
+            break;
+        case 'i':
+            new AudioInputNodeView();
             break;
         default:
             break;
