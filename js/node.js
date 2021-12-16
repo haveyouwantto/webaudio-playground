@@ -600,6 +600,7 @@ class SpectrumView extends AudioNodeView {
         super();
         this.setTitle('FFT Spectrum');
         this.node = ctx.createAnalyser();
+        this.node.smoothingTimeConstant = 0;
         this.canvas = document.createElement('canvas');
         this.panel.appendChild(this.canvas);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
@@ -666,6 +667,15 @@ class AudioInputNodeView extends AudioNodeView {
             this.node = ctx.createMediaStreamSource(stream);
             this.addNewSetting('Node', '', null, null, null, this.node);
         });
+    }
+}
+
+class NewView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Absolute Value');
+        this.node = new AudioWorkletNode(ctx, "binary-input");
+        this.addNewSetting('Node', '', null, null, null, this.node);
     }
 }
 
@@ -741,6 +751,9 @@ document.addEventListener('keypress', e => {
         case 'i':
             new AudioInputNodeView();
             break;
+            case '.':
+                new NewView();
+                break;
         default:
             break;
     }

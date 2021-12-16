@@ -24,5 +24,21 @@ class AbsoluteValueProcessor extends AudioWorkletProcessor {
     }
 }
 
+class BinaryInputProcessor extends AudioWorkletProcessor {
+    process(inputs, outputs, parameters) {
+        const output = outputs[0];
+        output.forEach(channel => {
+            for (let i = 0; i < channel.length; i += 16) {
+                let val = Math.random() > 0.5 ? 1 : 0;
+                for (let j = 0; j < 16; j++) {
+                    channel[i + j] = val;
+                }
+            }
+        });
+        return true;
+    }
+}
+
 registerProcessor('white-noise', WhiteNoiseProcessor);
 registerProcessor('absolute-value', AbsoluteValueProcessor);
+registerProcessor('binary-input', BinaryInputProcessor);
