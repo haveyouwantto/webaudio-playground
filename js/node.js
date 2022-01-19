@@ -145,7 +145,7 @@ class AudioNodeView {
 }
 
 class Setting {
-    constructor(name, type, value, input = null, valChange = input, output = null) {
+    constructor(name, type, value, input = null, valChange = input, output = null, inChannel = null,outChannel = null) {
         this.div = document.createElement('div');
         this.div.className = 'setting';
         this.id = Math.random() + '';
@@ -153,6 +153,9 @@ class Setting {
         this.outputs = [];
         this.outputLines = {};
         this.name = name;
+
+        this.inChannel = inChannel;
+        this.outChannel = outChannel;
 
         this.inputTag;
         this.outputTag;
@@ -189,24 +192,20 @@ class Setting {
                 this.div.appendChild(field);
                 break;
             case 'list':
-                field = document.createElement('input');
+                field = document.createElement('select');
                 field.className = 'input-number';
-                field.type = 'source';
-                field.setAttribute('list', this.id + '-list');
-                let src = document.createElement('datalist');
-                src.id = this.id + '-list';
                 for (const key in value) {
                     if (Object.hasOwnProperty.call(value, key)) {
                         const element = value[key];
                         let option = document.createElement('option');
                         option.value = element;
-                        src.appendChild(option);
+                        option.appendChild(document.createTextNode(element));
+                        field.appendChild(option);
                     }
                 }
                 field.addEventListener('change', e => {
                     valChange['type'] = field.value;
                 });
-                field.appendChild(src);
                 this.div.appendChild(field);
         }
         this.field = field;
@@ -751,9 +750,6 @@ document.addEventListener('keypress', e => {
         case 'i':
             new AudioInputNodeView();
             break;
-            case '.':
-                new NewView();
-                break;
         default:
             break;
     }
