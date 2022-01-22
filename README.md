@@ -7,7 +7,7 @@ This is a small web application which takes the advantage of the web audio API. 
 
 <center>FM Modulation with WebAudio API</center>
 
-
+-----
 Currently, nodes can only be added with hotkeys.
 
 |   Key   |   Node   |
