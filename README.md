@@ -1,5 +1,7 @@
 # WebAudio Playground
 
+## <a href=https://haveyouwantto.github.io/webaudio-playground/>Open in Github Pages</a>
+
 This is a small web application which takes the advantage of the web audio API. It uses flowchart to control the program, which is easy to use.
 
 
