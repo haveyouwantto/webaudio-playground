@@ -597,7 +597,7 @@ class FrequencyView extends AudioNodeView {
 class SpectrumView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('FFT Spectrum');
+        this.setTitle('FFT Waterfall');
         this.node = ctx.createAnalyser();
         this.node.smoothingTimeConstant = 0;
         this.canvas = document.createElement('canvas');
