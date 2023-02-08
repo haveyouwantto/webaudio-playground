@@ -61,6 +61,18 @@ function formatColor(v) {
     return `rgb(${v[0]},${v[1]},${v[2]})`;
 }
 
+function generateUUID() {
+    let d = new Date().getTime();
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
 colorTrans(0.5);
 colorTrans(0.6);
 
@@ -71,8 +83,7 @@ class AudioNodeView {
         this.dragX = x;
         this.dragY = y;
 
-        this.panel.style.left = x + 'px';
-        this.panel.style.top = y + 'px';
+        this.moveTo(x, y);
 
         this.innerDiv = document.createElement('div');
         this.innerDiv.className = 'panel-title';
@@ -83,8 +94,7 @@ class AudioNodeView {
             this.dragY = e.pageY - pos.y;
         });
         this.innerDiv.addEventListener('dragend', e => {
-            this.panel.style.left = (e.pageX - this.dragX) + 'px';
-            this.panel.style.top = (e.pageY - this.dragY) + 'px';
+            this.moveTo(e.pageX - this.dragX, e.pageY - this.dragY)
             for (const setting in this.settings) {
                 const element = this.settings[setting];
                 element.updateLines();
@@ -100,6 +110,11 @@ class AudioNodeView {
         nodes.add(this)
 
         this.settings = {};
+    }
+
+    moveTo(x, y) {
+        this.panel.style.left = x + 'px';
+        this.panel.style.top = y + 'px';
     }
 
     remove() {
@@ -145,17 +160,16 @@ class AudioNodeView {
 }
 
 class Setting {
-    constructor(name, type, value, input = null, valChange = input, output = null, inChannel = null,outChannel = null) {
+    constructor(name, type, value, input = null, valChange = input, output = null) {
         this.div = document.createElement('div');
         this.div.className = 'setting';
-        this.id = Math.random() + '';
+        this.id = generateUUID();
         this.inputs = [];
         this.outputs = [];
         this.outputLines = {};
         this.name = name;
-
-        this.inChannel = inChannel;
-        this.outChannel = outChannel;
+        this.type = type;
+        this.valChange = valChange;
 
         this.inputTag;
         this.outputTag;
@@ -679,16 +693,45 @@ class NewView extends AudioNodeView {
 }
 
 function export1() {
-    let map = [];
+    let map = {
+        "nodes": [],
+        "settings": {}
+    };
+
+    for (const setting in settings) {
+        let s = settings[setting];
+        console.log(s);
+
+        let n = {
+            "type": s.type,
+            "outputs": []
+        }
+        switch (s.type) {
+            case 'num':
+                n.value = s.valChange.value;
+                break;
+            case 'list':
+                n.value = s.valChange.type;
+                break
+        }
+        for (const id in s.outputLines) {
+            n.outputs.push(id);
+        }
+        map.settings[setting] = n;
+    }
+
     for (const node of nodes) {
-        map.push({
+        let n = {
             "type": node.constructor.name,
             "x": node.dragX,
             "y": node.dragY,
-            "settings": {
+            "settings": {}
+        }
+        for (let setting in node.settings) {
+            n.settings[setting] = node.settings[setting].id;
+        }
 
-            }
-        });
+        map.nodes.push(n);
     }
     return map;
 }

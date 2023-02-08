@@ -1,0 +1,211 @@
+{
+    "nodes": [
+        {
+            "type": "AudioOutputNodeView",
+            "x": 71,
+            "y": 19,
+            "settings": {
+                "Node": "88ece1f4-b312-4672-a233-2cdaa580321f"
+            }
+        },
+        {
+            "type": "AudioSourceView",
+            "x": 187,
+            "y": 3,
+            "settings": {
+                "Node": "7133ea4a-626d-4d3e-bae6-40fc2b51c92f"
+            }
+        },
+        {
+            "type": "GainNodeView",
+            "x": 109,
+            "y": 11,
+            "settings": {
+                "Gain": "900674e6-67fe-42c4-a6f2-4a154bd00c73",
+                "Node": "7a746c6a-72e2-4d0d-9e14-242d1cd1c90c"
+            }
+        },
+        {
+            "type": "OscillatorNodeView",
+            "x": 140,
+            "y": 12,
+            "settings": {
+                "Frequency": "9c990ead-95aa-4e2f-8854-b7955e42b970",
+                "Detune": "50fdb123-e700-48a7-a669-374c1720f1ae",
+                "Waveform": "7ca45050-beeb-4a07-a73d-afa8664b62df",
+                "Node": "c60e8921-2aa7-4fe8-bae2-232ad8f5d2e9"
+            }
+        },
+        {
+            "type": "WavesView",
+            "x": 97,
+            "y": 10,
+            "settings": {
+                "Node": "b135917f-e48f-445b-a753-a61786a2cd26"
+            }
+        },
+        {
+            "type": "SpectrumView",
+            "x": 76,
+            "y": 13,
+            "settings": {
+                "Node": "cd1613c8-85a1-46e7-9a22-4011e61cfe08"
+            }
+        },
+        {
+            "type": "BiquadFilterNodeView",
+            "x": 76,
+            "y": 21,
+            "settings": {
+                "Frequency": "6ee6cf34-487e-443c-8293-65b3852d756c",
+                "Detune": "7f1962c3-6cbf-4576-bd0b-f88ccd616508",
+                "Q": "dd1d8ec4-b0d0-4d51-be97-1e442fc179e9",
+                "Gain": "20ec667a-f5ad-43ff-9108-c71b00701f11",
+                "Type": "746aa342-ff10-4bcc-b287-c9733b39ce95",
+                "Node": "3ffe4cad-5351-4af9-8c14-b1643476eba8"
+            }
+        },
+        {
+            "type": "WavesView",
+            "x": 178,
+            "y": 22,
+            "settings": {
+                "Node": "573a4aa5-ee76-4913-bb3c-578658444c2c"
+            }
+        },
+        {
+            "type": "SpectrumView",
+            "x": 156,
+            "y": 22,
+            "settings": {
+                "Node": "b96011f1-36e0-49ad-ad85-0ca59c0ce01c"
+            }
+        }
+    ],
+    "settings": {
+        "88ece1f4-b312-4672-a233-2cdaa580321f": {
+            "type": "",
+            "outputs": []
+        },
+        "7133ea4a-626d-4d3e-bae6-40fc2b51c92f": {
+            "type": "",
+            "outputs": [
+                "7a746c6a-72e2-4d0d-9e14-242d1cd1c90c",
+                "b135917f-e48f-445b-a753-a61786a2cd26"
+            ]
+        },
+        "900674e6-67fe-42c4-a6f2-4a154bd00c73": {
+            "type": "num",
+            "outputs": [],
+            "value": 0
+        },
+        "7a746c6a-72e2-4d0d-9e14-242d1cd1c90c": {
+            "type": "",
+            "outputs": [
+                "3ffe4cad-5351-4af9-8c14-b1643476eba8"
+            ]
+        },
+        "9c990ead-95aa-4e2f-8854-b7955e42b970": {
+            "type": "num",
+            "outputs": [],
+            "value": 12000
+        },
+        "50fdb123-e700-48a7-a669-374c1720f1ae": {
+            "type": "num",
+            "outputs": [],
+            "value": 0
+        },
+        "7ca45050-beeb-4a07-a73d-afa8664b62df": {
+            "type": "list",
+            "outputs": [],
+            "value": "sine"
+        },
+        "c60e8921-2aa7-4fe8-bae2-232ad8f5d2e9": {
+            "type": "",
+            "outputs": [
+                "900674e6-67fe-42c4-a6f2-4a154bd00c73"
+            ]
+        },
+        "b135917f-e48f-445b-a753-a61786a2cd26": {
+            "type": "",
+            "outputs": [
+                "cd1613c8-85a1-46e7-9a22-4011e61cfe08"
+            ]
+        },
+        "cd1613c8-85a1-46e7-9a22-4011e61cfe08": {
+            "type": "",
+            "outputs": []
+        },
+        "6ee6cf34-487e-443c-8293-65b3852d756c": {
+            "type": "num",
+            "outputs": [],
+            "value": 6000
+        },
+        "7f1962c3-6cbf-4576-bd0b-f88ccd616508": {
+            "type": "num",
+            "outputs": [],
+            "value": 0
+        },
+        "dd1d8ec4-b0d0-4d51-be97-1e442fc179e9": {
+            "type": "num",
+            "outputs": [],
+            "value": 1
+        },
+        "20ec667a-f5ad-43ff-9108-c71b00701f11": {
+            "type": "num",
+            "outputs": [],
+            "value": 0
+        },
+        "746aa342-ff10-4bcc-b287-c9733b39ce95": {
+            "type": "list",
+            "outputs": [],
+            "value": "lowpass"
+        },
+        "3ffe4cad-5351-4af9-8c14-b1643476eba8": {
+            "type": "",
+            "outputs": [
+                "573a4aa5-ee76-4913-bb3c-578658444c2c",
+                "88ece1f4-b312-4672-a233-2cdaa580321f"
+            ]
+        },
+        "43aaf009-a290-498f-b070-4b64e2405d4a": {
+            "type": "num",
+            "outputs": [],
+            "value": 350
+        },
+        "244838bc-a878-4250-b866-818cb172c420": {
+            "type": "num",
+            "outputs": [],
+            "value": 0
+        },
+        "c6fd1973-b141-40e9-ada0-c70a08bddf02": {
+            "type": "num",
+            "outputs": [],
+            "value": 1
+        },
+        "30ee695d-6e0f-4af7-9eae-1ec887fb0b89": {
+            "type": "num",
+            "outputs": [],
+            "value": 0
+        },
+        "454fe805-750d-4683-b6d5-3447cb430190": {
+            "type": "list",
+            "outputs": [],
+            "value": "lowpass"
+        },
+        "7118b32e-6f58-4896-a0ea-c2573fffd898": {
+            "type": "",
+            "outputs": []
+        },
+        "573a4aa5-ee76-4913-bb3c-578658444c2c": {
+            "type": "",
+            "outputs": [
+                "b96011f1-36e0-49ad-ad85-0ca59c0ce01c"
+            ]
+        },
+        "b96011f1-36e0-49ad-ad85-0ca59c0ce01c": {
+            "type": "",
+            "outputs": []
+        }
+    }
+}
