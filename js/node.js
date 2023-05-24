@@ -781,6 +781,7 @@ document.addEventListener('contextmenu', e => {
     menu.classList.add('panel')
     menu.style.left = `${mouseX}px`; // Position the menu at the mouse coordinates
     menu.style.top = `${mouseY}px`;
+    menu.style.zIndex = `999`;
 
     menuItems.forEach(item => {
         const menuItem = document.createElement('div');
