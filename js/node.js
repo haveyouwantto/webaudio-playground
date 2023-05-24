@@ -687,7 +687,7 @@ class ConstantSourceView extends AudioNodeView {
         this.setTitle('Constant');
         this.node = ctx.createConstantSource();
         this.addNewSetting('Value', 'num', this.node.offset.value, this.node.offset);
-        this.addNewSetting('Node', '', null, this.node, null, this.node);
+        this.addNewSetting('Node', '', null, null, null, this.node);
     }
 }
 
@@ -757,21 +757,21 @@ document.addEventListener('contextmenu', e => {
 
     const menuItems = [
         { key: 'u', view: ConstantSourceView, name: 'Constant' },
-        { key: 'o', view: OscillatorNodeView, name: 'Oscillator Node' },
-        { key: 'g', view: GainNodeView, name: 'Gain Node' },
-        { key: 'c', view: DynamicsCompressorNodeView, name: 'Dynamics Compressor Node' },
-        { key: 'p', view: PannerNodeView, name: 'Panner Node' },
+        { key: 'o', view: OscillatorNodeView, name: 'Oscillator' },
+        { key: 'g', view: GainNodeView, name: 'Gain' },
+        { key: 'c', view: DynamicsCompressorNodeView, name: 'Dynamics Compressor' },
+        { key: 'p', view: PannerNodeView, name: 'Panner' },
         { key: 's', view: AudioSourceView, name: 'Audio Source' },
         { key: 'r', view: AudioRecorderView, name: 'Audio Recorder' },
-        { key: 'd', view: DelayNodeView, name: 'Delay Node' },
-        { key: 't', view: StereoPannerNodeView, name: 'Stereo Panner Node' },
-        { key: 'b', view: BiquadFilterNodeView, name: 'Biquad Filter Node' },
+        { key: 'd', view: DelayNodeView, name: 'Delay' },
+        { key: 't', view: StereoPannerNodeView, name: 'Stereo Panner' },
+        { key: 'b', view: BiquadFilterNodeView, name: 'Biquad Filter' },
         { key: 'w', view: WavesView, name: 'Waves Viewer' },
         { key: 'f', view: FrequencyView, name: 'Frequency Viewer' },
         { key: 'h', view: SpectrumView, name: 'Spectrum Viewer' },
         { key: 'n', view: NoiseGeneratorView, name: 'Noise Generator' },
         { key: 'v', view: AbsoluteValueView, name: 'Absolute Value' },
-        { key: 'i', view: AudioInputNodeView, name: 'Audio Input Node' },
+        { key: 'i', view: AudioInputNodeView, name: 'Audio Input' },
     ];
 
     const mouseX = e.clientX; // X-coordinate of the mouse
