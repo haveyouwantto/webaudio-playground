@@ -788,7 +788,9 @@ document.addEventListener('contextmenu', e => {
         menuItem.textContent = item.name;
         menuItem.classList.add('menu-item')
         menuItem.addEventListener('click', () => {
-            new item.view(); // Create a new instance of the corresponding view
+            let view = new item.view(); // Create a new instance of the corresponding view
+
+            view.moveTo(mouseX, mouseY);
             menu.remove(); // Remove the menu after selecting an item
         });
         menu.appendChild(menuItem);
