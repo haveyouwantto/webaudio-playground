@@ -38,6 +38,16 @@ html {
     font-family: sans-serif;
 }
 
+.menu-item{
+    cursor: pointer;
+    padding: 0 4px 4px 4px;
+}
+
+.menu-item:hover{
+    background-color: #4caf50;
+    color: white;
+}
+
 .input, .output{
     border-radius: 100%;
     width: 15px;

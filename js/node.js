@@ -73,9 +73,6 @@ function generateUUID() {
     });
 }
 
-colorTrans(0.5);
-colorTrans(0.6);
-
 class AudioNodeView {
     constructor(x = 8, y = 8, removeable = true) {
         this.panel = document.createElement('div');
@@ -683,6 +680,17 @@ class AudioInputNodeView extends AudioNodeView {
     }
 }
 
+
+class ConstantSourceView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Constant');
+        this.node = ctx.createConstantSource();
+        this.addNewSetting('Value', 'num', this.node.offset.value, this.node.offset);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
 class NewView extends AudioNodeView {
     constructor() {
         super();
@@ -692,7 +700,7 @@ class NewView extends AudioNodeView {
     }
 }
 
-function export1() {
+function save() {
     let map = {
         "nodes": [],
         "settings": {}
@@ -739,63 +747,62 @@ function export1() {
 let out = new AudioOutputNodeView();
 
 let suspend = true;
-document.addEventListener('keypress', e => {
+document.addEventListener('contextmenu', e => {
+    e.preventDefault(); // Prevent the default right-click context menu
+
     if (suspend) {
         ctx.resume();
         suspend = false;
     }
-    switch (e.key) {
-        case 'o':
-            new OscillatorNodeView();
-            break;
-        case 'g':
-            new GainNodeView();
-            break;
-        case 'c':
-            new DynamicsCompressorNodeView();
-            break;
-        case 'p':
-            new PannerNodeView();
-            break;
-        case 's':
-            new AudioSourceView();
-            break;
-        case 'r':
-            new AudioRecorderView();
-            break;
-        case 'd':
-            new DelayNodeView();
-            break;
-        case 't':
-            new StereoPannerNodeView();
-            break;
-        case 'b':
-            new BiquadFilterNodeView();
-            break;
-        // case 'w':
-        //     new WaveShaperNodeView();
-        //     break;
-        case 'w':
-            new WavesView();
-            break;
-        case 'f':
-            new FrequencyView();
-            break;
-        case 'h':
-            new SpectrumView();
-            break;
-        case 'n':
-            new NoiseGeneratorView();
-            break;
-        case 'v':
-            new AbsoluteValueView();
-            break;
-        case 'i':
-            new AudioInputNodeView();
-            break;
-        default:
-            break;
-    }
+
+    const menuItems = [
+        { key: 'u', view: ConstantSourceView, name: 'Constant' },
+        { key: 'o', view: OscillatorNodeView, name: 'Oscillator Node' },
+        { key: 'g', view: GainNodeView, name: 'Gain Node' },
+        { key: 'c', view: DynamicsCompressorNodeView, name: 'Dynamics Compressor Node' },
+        { key: 'p', view: PannerNodeView, name: 'Panner Node' },
+        { key: 's', view: AudioSourceView, name: 'Audio Source' },
+        { key: 'r', view: AudioRecorderView, name: 'Audio Recorder' },
+        { key: 'd', view: DelayNodeView, name: 'Delay Node' },
+        { key: 't', view: StereoPannerNodeView, name: 'Stereo Panner Node' },
+        { key: 'b', view: BiquadFilterNodeView, name: 'Biquad Filter Node' },
+        { key: 'w', view: WavesView, name: 'Waves Viewer' },
+        { key: 'f', view: FrequencyView, name: 'Frequency Viewer' },
+        { key: 'h', view: SpectrumView, name: 'Spectrum Viewer' },
+        { key: 'n', view: NoiseGeneratorView, name: 'Noise Generator' },
+        { key: 'v', view: AbsoluteValueView, name: 'Absolute Value' },
+        { key: 'i', view: AudioInputNodeView, name: 'Audio Input Node' },
+    ];
+
+    const mouseX = e.clientX; // X-coordinate of the mouse
+    const mouseY = e.clientY; // Y-coordinate of the mouse
+
+    const menu = document.createElement('div'); // Create a new div for the menu
+    menu.classList.add('panel')
+    menu.style.left = `${mouseX}px`; // Position the menu at the mouse coordinates
+    menu.style.top = `${mouseY}px`;
+
+    menuItems.forEach(item => {
+        const menuItem = document.createElement('div');
+        menuItem.textContent = item.name;
+        menuItem.classList.add('menu-item')
+        menuItem.addEventListener('click', () => {
+            new item.view(); // Create a new instance of the corresponding view
+            menu.remove(); // Remove the menu after selecting an item
+        });
+        menu.appendChild(menuItem);
+    });
+
+    // Event listener to remove the menu when clicking outside of it
+    const removeMenu = () => {
+        menu.remove();
+        document.removeEventListener('click', removeMenu);
+    };
+
+    document.addEventListener('click', removeMenu);
+
+    document.body.appendChild(menu); // Append the menu to the document body
 });
+
 
 // [{"type":"AudioOutputNodeView","x":67,"y":10,"settings":{}},{"type":"AudioSourceView","x":52,"y":25,"settings":{}},{"type":"FrequencyView","x":82,"y":14,"settings":{}},{"type":"SpectrumView","x":94,"y":15,"settings":{}},{"type":"WavesView","x":123,"y":5,"settings":{}},{"type":"OscillatorNodeView","x":107,"y":21,"settings":{}},{"type":"GainNodeView","x":81,"y":16,"settings":{}},{"type":"GainNodeView","x":99,"y":27,"settings":{}},{"type":"OscillatorNodeView","x":86,"y":22,"settings":{}},{"type":"GainNodeView","x":75,"y":17,"settings":{}},{"type":"GainNodeView","x":99,"y":14,"settings":{}},{"type":"AudioSourceView","x":142,"y":24,"settings":{}},{"type":"GainNodeView","x":82,"y":14,"settings":{}},{"type":"BiquadFilterNodeView","x":44,"y":7,"settings":{}},{"type":"AbsoluteValueView","x":75,"y":19,"settings":{}},{"type":"FrequencyView","x":168,"y":9,"settings":{}},{"type":"SpectrumView","x":129,"y":23,"settings":{}},{"type":"WavesView","x":149,"y":23,"settings":{}},{"type":"BiquadFilterNodeView","x":104,"y":18,"settings":{}},{"type":"AudioRecorderView","x":84,"y":24,"settings":{}},{"type":"DynamicsCompressorNodeView","x":110,"y":23,"settings":{}},{"type":"GainNodeView","x":102,"y":5,"settings":{}},{"type":"NoiseGeneratorView","x":85,"y":14,"settings":{}},{"type":"GainNodeView","x":50,"y":18,"settings":{}}]
