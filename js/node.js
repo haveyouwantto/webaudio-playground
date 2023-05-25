@@ -75,6 +75,8 @@ function generateUUID() {
 
 class AudioNodeView {
     constructor(x = 8, y = 8, removeable = true) {
+        this.x = x;
+        this.y = y;
         this.panel = document.createElement('div');
         this.panel.className = 'panel';
         this.dragX = x;
@@ -110,6 +112,8 @@ class AudioNodeView {
     }
 
     moveTo(x, y) {
+        this.x = x;
+        this.y = y;
         this.panel.style.left = x + 'px';
         this.panel.style.top = y + 'px';
     }
@@ -119,6 +123,7 @@ class AudioNodeView {
             if (Object.hasOwnProperty.call(this.settings, e)) {
                 const element = this.settings[e];
                 element.disconnectAll();
+                delete settings[element.id]
             }
         }
         document.querySelector('body').removeChild(this.panel);
@@ -149,10 +154,14 @@ class AudioNodeView {
         if (setting) {
             setting.destroy();
             this.panel.removeChild(setting.div);
-            this.settings[name] = null;
+            delete this.settings[name]
             return true;
         }
         return false;
+    }
+
+    getSetting(name) {
+        return this.settings[name];
     }
 }
 
@@ -238,6 +247,18 @@ class Setting {
         settings[this.id] = this;
     }
 
+    edit(newValue) {
+        this.field.value = newValue;
+        switch (this.type) {
+            case 'num':
+                this.valChange.value = newValue;
+                return;
+            case 'list':
+                this.valChange.type = newValue;
+                return
+        }
+    }
+
     connect(node) {
         this.outputs.push(node);
         node.inputs.push(this);
@@ -262,8 +283,7 @@ class Setting {
 
         this.output.disconnect(node.input);
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
-        console.log(node.inputs);
-
+        delete this.outputLines[node.id];
         console.log(`Disconnected ${this.output.constructor.name} from ${node.input.constructor.name}`);
     }
 
@@ -708,8 +728,6 @@ function save() {
 
     for (const setting in settings) {
         let s = settings[setting];
-        console.log(s);
-
         let n = {
             "type": s.type,
             "outputs": []
@@ -731,8 +749,8 @@ function save() {
     for (const node of nodes) {
         let n = {
             "type": node.constructor.name,
-            "x": node.dragX,
-            "y": node.dragY,
+            "x": node.x,
+            "y": node.y,
             "settings": {}
         }
         for (let setting in node.settings) {
@@ -742,6 +760,46 @@ function save() {
         map.nodes.push(n);
     }
     return map;
+}
+
+function load(json_data) {
+    for (const node of nodes) {
+        node.remove();
+    }
+
+    let ids = {}
+
+    for (const node of json_data.nodes) {
+        let view = new (eval(node.type))();
+        view.moveTo(node.x, node.y);
+
+        for (const name in node.settings) {
+            if (Object.hasOwnProperty.call(node.settings, name)) {
+                const saved_setting = json_data.settings[node.settings[name]];
+
+                const setting = view.getSetting(name);
+                try {
+                    setting.edit(saved_setting.value);
+                } catch (error) {
+                    console.warn(error);
+                }
+                ids[node.settings[name]] = setting;
+            }
+        }
+    }
+
+    for (const id in json_data.settings) {
+        if (Object.hasOwnProperty.call(json_data.settings, id)) {
+            const outputs = json_data.settings[id].outputs;
+            for (const output of outputs) {
+                try {
+                    ids[id].connect(ids[output]);
+                } catch (error) {
+                    console.warn(error);
+                }
+            }
+        }
+    }
 }
 
 let out = new AudioOutputNodeView();
@@ -795,6 +853,53 @@ document.addEventListener('contextmenu', e => {
         });
         menu.appendChild(menuItem);
     });
+
+
+    const saveButton = document.createElement('div');
+    saveButton.textContent = "Save";
+    saveButton.classList.add('menu-item')
+    menu.appendChild(saveButton);
+    // Attach a click event listener to the button
+    saveButton.addEventListener('click', () => {
+        // Call the save() function to retrieve the data
+        const data = save();
+
+        // Convert the data to JSON string
+        const jsonString = JSON.stringify(data);
+
+        // Copy the JSON string to the clipboard
+        navigator.clipboard.writeText(jsonString)
+            .then(() => {
+                alert('JSON string copied to clipboard');
+            })
+            .catch((error) => {
+                console.error('Failed to copy JSON string to clipboard:', error);
+            });
+    });
+
+    const loadButton = document.createElement('div');
+    loadButton.textContent = "Load";
+    loadButton.classList.add('menu-item')
+    menu.appendChild(loadButton);
+    // Attach a click event listener to the button
+    loadButton.addEventListener('click', () => {
+        // Prompt the user to enter a JSON string
+        const jsonString = prompt('Enter JSON string:');
+
+        // Check if the user entered a JSON string
+        if (jsonString) {
+            try {
+                // Parse the JSON string into an object
+                const data = JSON.parse(jsonString);
+
+                // Call the load() function to process the loaded data
+                load(data);
+            } catch (error) {
+                console.error('Invalid JSON string:', error);
+            }
+        }
+    });
+
 
     // Event listener to remove the menu when clicking outside of it
     const removeMenu = () => {
