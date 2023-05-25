@@ -429,6 +429,17 @@ class AudioSourceView extends AudioNodeView {
         });
         this.panel.appendChild(input);
 
+
+        // this.net = document.createElement('button');
+        // this.net.innerText = 'URL';
+        // this.net.addEventListener('click', e => {
+        //     let url = prompt("Enter audio url: ");
+        //     if (url) {
+        //         aud.src = url;
+        //     }
+        // });
+        // this.panel.appendChild(this.net);
+
         this.addNewSetting('Node', '', null, null, null, node);
     }
 }
@@ -814,23 +825,33 @@ document.addEventListener('contextmenu', e => {
     }
 
     const menuItems = [
-        { key: 'u', view: ConstantSourceView, name: 'Constant' },
-        { key: 'o', view: OscillatorNodeView, name: 'Oscillator' },
-        { key: 'g', view: GainNodeView, name: 'Gain' },
-        { key: 'c', view: DynamicsCompressorNodeView, name: 'Dynamics Compressor' },
-        { key: 'p', view: PannerNodeView, name: 'Panner' },
-        { key: 's', view: AudioSourceView, name: 'Audio Source' },
-        { key: 'r', view: AudioRecorderView, name: 'Audio Recorder' },
-        { key: 'd', view: DelayNodeView, name: 'Delay' },
-        { key: 't', view: StereoPannerNodeView, name: 'Stereo Panner' },
-        { key: 'b', view: BiquadFilterNodeView, name: 'Biquad Filter' },
-        { key: 'w', view: WavesView, name: 'Waves Viewer' },
-        { key: 'f', view: FrequencyView, name: 'Frequency Viewer' },
-        { key: 'h', view: SpectrumView, name: 'Spectrum Viewer' },
-        { key: 'n', view: NoiseGeneratorView, name: 'Noise Generator' },
-        { key: 'v', view: AbsoluteValueView, name: 'Absolute Value' },
-        { key: 'i', view: AudioInputNodeView, name: 'Audio Input' },
+        // Generators
+        { view: ConstantSourceView, name: 'Constant' },
+        { view: OscillatorNodeView, name: 'Oscillator' },
+        { view: NoiseGeneratorView, name: 'Noise Generator' },
+
+        // Processors
+        { view: GainNodeView, name: 'Gain' },
+        { view: DynamicsCompressorNodeView, name: 'Dynamics Compressor' },
+        { view: DelayNodeView, name: 'Delay' },
+        { view: BiquadFilterNodeView, name: 'Biquad Filter' },
+        { view: AbsoluteValueView, name: 'Absolute Value' },
+
+        // Spatialization
+        { view: PannerNodeView, name: 'Panner' },
+        { view: StereoPannerNodeView, name: 'Stereo Panner' },
+
+        // Audio I/O
+        { view: AudioSourceView, name: 'Audio Source' },
+        { view: AudioInputNodeView, name: 'Audio Input' },
+        { view: AudioRecorderView, name: 'Audio Recorder' },
+
+        // Visualizers
+        { view: WavesView, name: 'Waves Viewer' },
+        { view: FrequencyView, name: 'Frequency Viewer' },
+        { view: SpectrumView, name: 'Spectrum Viewer' },
     ];
+
 
     const mouseX = e.clientX; // X-coordinate of the mouse
     const mouseY = e.clientY; // Y-coordinate of the mouse
