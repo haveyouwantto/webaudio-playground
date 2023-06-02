@@ -773,17 +773,12 @@ class ConvolverNodeView extends AudioNodeView {
         let buffer = this.buffer.getChannelData(0);
 
         let frequencyResponse = halfFFT(fftshift(fft(fftPreprocess([...buffer])))).map(e => 20 * Math.log10(e.modulus));
-        console.log(frequencyResponse);
 
         let canvasCtx = this.canvas.getContext('2d');
         canvasCtx.fillStyle = 'rgb(240, 240, 240)';
         canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         canvasCtx.lineWidth = 1;
         canvasCtx.beginPath();
-
-        let height = this.canvas.height / 11;
-        console.log(height);
-
 
         let step = this.canvas.height / 11;
         canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
@@ -806,7 +801,6 @@ class ConvolverNodeView extends AudioNodeView {
         for (var i = 0; i < frequencyResponse.length; i++) {
             var x = i * sliceWidth;
             var y = -(frequencyResponse[i] - 10) * 1.5;
-            console.log(y, frequencyResponse[i]);
 
             if (i === 0) {
                 canvasCtx.moveTo(x, y);
@@ -835,7 +829,7 @@ class ConvolverNodeView extends AudioNodeView {
                         node.buffer = buffer;
                         this.buffer = buffer;
                         console.log(this);
-                        this.drawFrequency();
+                        this.updateGraph();
                     });
                 };
                 reader.readAsArrayBuffer(file);
