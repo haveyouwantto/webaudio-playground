@@ -59,7 +59,8 @@ button:hover, input::file-selector-button:hover {
 
 .menu-item{
     cursor: pointer;
-    padding: 0 4px 4px 4px;
+    padding: 4px 4px 4px 4px;
+    font-family: sans-serif;
 }
 
 .menu-item:hover{
