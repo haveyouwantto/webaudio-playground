@@ -791,27 +791,6 @@ class ConvolverNodeView extends AudioNodeView {
         let middle = this.canvas.height * 0.5;
         let step = this.canvas.height / 20;
 
-        canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, middle);
-        canvasCtx.lineTo(this.canvas.width, middle);
-        canvasCtx.stroke();
-
-        canvasCtx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        for (let y = middle + step; y < this.canvas.height; y += step) {
-            canvasCtx.beginPath();
-            canvasCtx.moveTo(0, y);
-            canvasCtx.lineTo(this.canvas.width, y);
-            canvasCtx.stroke();
-        }
-
-        for (let y = middle - step; y > 0; y -= step) {
-            canvasCtx.beginPath();
-            canvasCtx.moveTo(0, y);
-            canvasCtx.lineTo(this.canvas.width, y);
-            canvasCtx.stroke();
-        }
-
         canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
         var sliceWidth = this.canvas.width / frequencyResponse.length;
         for (var i = 0; i < frequencyResponse.length; i++) {
@@ -826,6 +805,32 @@ class ConvolverNodeView extends AudioNodeView {
         }
         canvasCtx.stroke();
 
+        
+
+        canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, middle);
+        canvasCtx.lineTo(this.canvas.width, middle);
+        canvasCtx.stroke();
+
+        canvasCtx.strokeStyle = 'rgba(80, 80, 80, 0.7)';
+        for (let y = middle + step; y < this.canvas.height; y += step) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, y);
+            canvasCtx.lineTo(this.canvas.width, y);
+            canvasCtx.stroke();
+            console.log(y);
+            
+        }
+
+        for (let y = middle - step; y > 0; y -= step) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, y);
+            canvasCtx.lineTo(this.canvas.width, y);
+            canvasCtx.stroke();
+            console.log(y);
+            
+        }
     }
 
 
@@ -858,6 +863,7 @@ class ConvolverNodeView extends AudioNodeView {
 
     initCanvas() {
         this.canvas = document.createElement('canvas');
+        this.canvas.height = 300;
         this.panel.appendChild(this.canvas);
 
         let div = document.createElement('div');
