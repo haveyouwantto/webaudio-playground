@@ -722,6 +722,42 @@ class ConstantSourceView extends AudioNodeView {
     }
 }
 
+
+class ConvolverNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.setTitle('Convolver');
+        this.buffer = null;
+        this.uploadBtn();
+    }
+
+    uploadBtn() {
+        let input = document.createElement('input');
+        let node = ctx.createConvolver();
+
+        input.type = 'file';
+        input.addEventListener('change', e => {
+            if (input.files[0]) {
+                var file = input.files[0];
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    var fileBuffer = loadEvent.target.result;
+                    ctx.decodeAudioData(fileBuffer).then(buffer => {
+                        node.buffer = buffer;
+                        console.log(node);
+                        
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+        this.panel.appendChild(input);
+
+        this.addNewSetting('Node', '', null, node, null, node);
+    }
+}
+
+
 class NewView extends AudioNodeView {
     constructor() {
         super();
