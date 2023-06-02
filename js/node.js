@@ -581,7 +581,7 @@ class WavesView extends AudioNodeView {
             var x = 0;
 
             for (var i = 0; i < buffer.length; i++) {
-                var v = buffer[i] * canvas.height / 2;
+                var v = -buffer[i] * canvas.height / 2;
                 var y = canvas.height / 2 + v;
 
                 if (i === 0) {
@@ -758,7 +758,7 @@ class ConvolverNodeView extends AudioNodeView {
 
         for (var i = 0; i < buffer.length; i++) {
             var x = i * sliceWidth;
-            var v = buffer[i] * this.canvas.height / 2;
+            var v = -buffer[i] * this.canvas.height / 2;
             var y = this.canvas.height / 2 + v;
 
             if (i === 0) {
@@ -778,7 +778,7 @@ class ConvolverNodeView extends AudioNodeView {
         let a = performance.now();
         let frequencyResponse = halfFFT(fft(fftPreprocess([...buffer]))).map(e => 20 * Math.log10(e.modulus));
         console.log(frequencyResponse);
-        
+
         console.log(performance.now() - a);
 
 
@@ -788,16 +788,24 @@ class ConvolverNodeView extends AudioNodeView {
         canvasCtx.lineWidth = 1;
         canvasCtx.beginPath();
 
-        let step = this.canvas.height / 11;
+        let middle = this.canvas.height * 0.5;
+        let step = this.canvas.height / 20;
+
         canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
         canvasCtx.beginPath();
-        canvasCtx.moveTo(0, step);
-        canvasCtx.lineTo(this.canvas.width, step);
+        canvasCtx.moveTo(0, middle);
+        canvasCtx.lineTo(this.canvas.width, middle);
         canvasCtx.stroke();
 
-        let db = 10;
         canvasCtx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        for (let y = step * 2; y <= this.canvas.height; y += step) {
+        for (let y = middle + step; y < this.canvas.height; y += step) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, y);
+            canvasCtx.lineTo(this.canvas.width, y);
+            canvasCtx.stroke();
+        }
+
+        for (let y = middle - step; y > 0; y -= step) {
             canvasCtx.beginPath();
             canvasCtx.moveTo(0, y);
             canvasCtx.lineTo(this.canvas.width, y);
@@ -808,7 +816,7 @@ class ConvolverNodeView extends AudioNodeView {
         var sliceWidth = this.canvas.width / frequencyResponse.length;
         for (var i = 0; i < frequencyResponse.length; i++) {
             var x = i * sliceWidth;
-            var y = -(frequencyResponse[i] - 10) * 1.5;
+            var y = -(frequencyResponse[i]) * 1.5 + this.canvas.height * 0.5;
 
             if (i === 0) {
                 canvasCtx.moveTo(x, y);
