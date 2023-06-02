@@ -39,7 +39,7 @@ button, input::file-selector-button {
 }
 
 button:hover, input::file-selector-button:hover {
-    background-color: gray;
+    background-color: var(--primary);
     color: white;
 }
 
@@ -57,7 +57,7 @@ button:hover, input::file-selector-button:hover {
     font-family: sans-serif;
 }
 
-.menu-item{
+.menu-item {
     cursor: pointer;
     padding: 4px 4px 4px 4px;
     font-family: sans-serif;
