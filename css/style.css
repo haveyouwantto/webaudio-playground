@@ -44,7 +44,7 @@ html {
 }
 
 .menu-item:hover{
-    background-color: #4caf50;
+    background-color: var(--primary);
     color: white;
 }
 
@@ -53,26 +53,31 @@ html {
     width: 15px;
     height: 15px;
     display: inline-block;
-    margin-left: 5px;
-    margin-right: 5px;
 }
 
 .setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 5px;
     text-align: center;
     margin-left: 10px;
 }
 
+.settingText {
+    margin: auto;
+}
+
 .input{
     position: absolute;
-    left: -10px;
+    left: -7.5px;
     background-color: var(--input);
     cursor: pointer;
 }
 
 .output{
     position: absolute;
-    right: -10px;
+    right: -7.5px;
     background-color: var(--output);
     cursor: grab;
 }

@@ -197,7 +197,10 @@ class Setting {
             this.inputTag = inputTag;
         }
 
-        this.div.appendChild(document.createTextNode(name));
+        let text = document.createElement('span');
+        text.classList.add('settingText')
+        text.innerText = name;
+        this.div.appendChild(text);
         let field;
         switch (type) {
             case 'num':
