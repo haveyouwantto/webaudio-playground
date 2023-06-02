@@ -60,16 +60,19 @@ html {
 .setting {
     margin-bottom: 5px;
     text-align: center;
+    margin-left: 10px;
 }
 
 .input{
-    float: left;
+    position: absolute;
+    left: -10px;
     background-color: var(--input);
     cursor: pointer;
 }
 
 .output{
-    float: right;
+    position: absolute;
+    right: -10px;
     background-color: var(--output);
     cursor: grab;
 }
