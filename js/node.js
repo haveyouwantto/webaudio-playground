@@ -863,7 +863,6 @@ class ConvolverNodeView extends AudioNodeView {
 
     initCanvas() {
         this.canvas = document.createElement('canvas');
-        this.canvas.height = 300;
         this.panel.appendChild(this.canvas);
 
         let div = document.createElement('div');
