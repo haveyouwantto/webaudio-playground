@@ -81,10 +81,36 @@ function fft(input) {
     return output;
 }
 
+function resampleFloat32Array(input, outputLength) {
+    const inputLength = input.length;
+    const ratio = inputLength / outputLength;
+  
+    const output = new Array(outputLength);
+  
+    for (let i = 0; i < outputLength; i++) {
+      const index = i * ratio;
+      const floorIndex = Math.floor(index);
+      const ceilIndex = Math.ceil(index);
+  
+      if (floorIndex === ceilIndex) {
+        output[i] = input[floorIndex];
+      } else {
+        const fraction = index - floorIndex;
+        const floorValue = input[floorIndex];
+        const ceilValue = input[ceilIndex];
+  
+        output[i] = (1 - fraction) * floorValue + fraction * ceilValue;
+      }
+    }
+  
+    return output;
+  }
+  
+
 function fftPreprocess(data) {
-    const n = data.length;
     data = data.map(e => new Complex(e, 0));
-    const paddedLength = Math.pow(2, Math.ceil(Math.log2(n)));
+    
+    const paddedLength = Math.pow(2, Math.ceil(Math.log2(data.length)));
     const paddedData = padWithZeros(data, paddedLength);
     return paddedData;
 }
@@ -116,9 +142,8 @@ function halfFFT(input) {
     const half = Math.floor(N / 2);
 
     const shifted = fftshift(input);
-
     // Take the first half of the shifted array
-    const halfOutput = shifted.slice(0, half);
+    const halfOutput = shifted.slice(half);
 
     return halfOutput;
 }

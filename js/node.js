@@ -772,7 +772,12 @@ class ConvolverNodeView extends AudioNodeView {
     drawFrequency() {
         let buffer = this.buffer.getChannelData(0);
 
-        let frequencyResponse = halfFFT(fftshift(fft(fftPreprocess([...buffer])))).map(e => 20 * Math.log10(e.modulus));
+        let a = performance.now();
+        let frequencyResponse = halfFFT(fft(fftPreprocess([...buffer]))).map(e => 20 * Math.log10(e.modulus));
+        console.log(frequencyResponse);
+        
+        console.log(performance.now() - a);
+
 
         let canvasCtx = this.canvas.getContext('2d');
         canvasCtx.fillStyle = 'rgb(240, 240, 240)';
