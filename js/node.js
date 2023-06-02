@@ -588,8 +588,6 @@ class WavesView extends AudioNodeView {
                 }
                 x += sliceWidth;
             }
-
-            canvasCtx.lineTo(canvas.width, canvas.height / 2);
             canvasCtx.stroke();
         };
         draw();
@@ -728,24 +726,116 @@ class ConvolverNodeView extends AudioNodeView {
         super();
         this.setTitle('Convolver');
         this.buffer = null;
+        this.initCanvas();
         this.uploadBtn();
+        this.drawMode = 0; // 0 = Impulse, 1 = Frequency
     }
+
+    updateGraph() {
+        switch (this.drawMode) {
+            case 0:
+                this.drawImpulse();
+                break;
+            case 1:
+                this.drawFrequency();
+                break;
+        }
+    }
+
+    drawImpulse() {
+        let buffer = this.buffer.getChannelData(0);
+        let canvasCtx = this.canvas.getContext('2d');
+        canvasCtx.fillStyle = 'rgb(240, 240, 240)';
+        canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        canvasCtx.lineWidth = 1;
+        canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+        canvasCtx.beginPath();
+
+        var sliceWidth = this.canvas.width / buffer.length;
+
+        for (var i = 0; i < buffer.length; i++) {
+            var x = i * sliceWidth;
+            var v = buffer[i] * this.canvas.height / 2;
+            var y = this.canvas.height / 2 + v;
+
+            if (i === 0) {
+                canvasCtx.moveTo(x, y);
+            } else {
+                canvasCtx.lineTo(x, y);
+            }
+        }
+
+        canvasCtx.lineTo(this.canvas.width, this.canvas.height / 2);
+        canvasCtx.stroke();
+    }
+
+    drawFrequency() {
+        let buffer = this.buffer.getChannelData(0);
+
+        let frequencyResponse = halfFFT(fftshift(fft(fftPreprocess([...buffer])))).map(e => 20 * Math.log10(e.modulus));
+        console.log(frequencyResponse);
+
+        let canvasCtx = this.canvas.getContext('2d');
+        canvasCtx.fillStyle = 'rgb(240, 240, 240)';
+        canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        canvasCtx.lineWidth = 1;
+        canvasCtx.beginPath();
+
+        let height = this.canvas.height / 11;
+        console.log(height);
+
+
+        let step = this.canvas.height / 11;
+        canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, step);
+        canvasCtx.lineTo(this.canvas.width, step);
+        canvasCtx.stroke();
+
+        let db = 10;
+        canvasCtx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        for (let y = step * 2; y <= this.canvas.height; y += step) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, y);
+            canvasCtx.lineTo(this.canvas.width, y);
+            canvasCtx.stroke();
+        }
+
+        canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+        var sliceWidth = this.canvas.width / frequencyResponse.length;
+        for (var i = 0; i < frequencyResponse.length; i++) {
+            var x = i * sliceWidth;
+            var y = -(frequencyResponse[i] - 10) * 1.5;
+            console.log(y, frequencyResponse[i]);
+
+            if (i === 0) {
+                canvasCtx.moveTo(x, y);
+            } else {
+                canvasCtx.lineTo(x, y);
+            }
+        }
+        canvasCtx.stroke();
+
+    }
+
 
     uploadBtn() {
         let input = document.createElement('input');
         let node = ctx.createConvolver();
 
         input.type = 'file';
+        input.style.display = 'block';
         input.addEventListener('change', e => {
             if (input.files[0]) {
                 var file = input.files[0];
                 var reader = new FileReader();
-                reader.onload = function (loadEvent) {
+                reader.onload = loadEvent => {
                     var fileBuffer = loadEvent.target.result;
                     ctx.decodeAudioData(fileBuffer).then(buffer => {
                         node.buffer = buffer;
-                        console.log(node);
-                        
+                        this.buffer = buffer;
+                        console.log(this);
+                        this.drawFrequency();
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -754,6 +844,31 @@ class ConvolverNodeView extends AudioNodeView {
         this.panel.appendChild(input);
 
         this.addNewSetting('Node', '', null, node, null, node);
+    }
+
+    initCanvas() {
+        this.canvas = document.createElement('canvas');
+        this.panel.appendChild(this.canvas);
+
+        let div = document.createElement('div');
+
+        let i = document.createElement('button');
+        i.innerText = "Impulse";
+        i.addEventListener('click', e => {
+            this.drawMode = 0;
+            this.updateGraph();
+        })
+        div.appendChild(i);
+
+        let f = document.createElement('button');
+        f.innerText = "Frequency";
+        f.addEventListener('click', e => {
+            this.drawMode = 1;
+            this.updateGraph();
+        })
+        div.appendChild(f);
+
+        this.panel.appendChild(div);
     }
 }
 
@@ -871,6 +986,7 @@ document.addEventListener('contextmenu', e => {
         { view: DynamicsCompressorNodeView, name: 'Dynamics Compressor' },
         { view: DelayNodeView, name: 'Delay' },
         { view: BiquadFilterNodeView, name: 'Biquad Filter' },
+        { view: ConvolverNodeView, name: 'Convolver' },
         { view: AbsoluteValueView, name: 'Absolute Value' },
 
         // Spatialization
