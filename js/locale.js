@@ -10,7 +10,7 @@ let defaultLocale = {
     "view.AbsoluteValueView": "Absolute Value",
     "view.PannerNodeView": "Panner",
     "view.StereoPannerNodeView": "Stereo Panner",
-    "view.AudioSourceView": "Audio Source",
+    "view.AudioSourceView": "Audio File",
     "view.AudioInputNodeView": "Audio Input",
     "view.AudioRecorderView": "Audio Recorder",
     "view.AudioOutputNodeView": "Audio Output",

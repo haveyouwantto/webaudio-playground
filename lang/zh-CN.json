@@ -10,7 +10,7 @@
     "view.AbsoluteValueView": "绝对值",
     "view.PannerNodeView": "定位器",
     "view.StereoPannerNodeView": "立体声定位器",
-    "view.AudioSourceView": "音频源",
+    "view.AudioSourceView": "音频文件",
     "view.AudioInputNodeView": "音频输入",
     "view.AudioRecorderView": "音频录制器",
     "view.AudioOutputNodeView": "音频输出",
