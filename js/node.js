@@ -835,8 +835,6 @@ class ConvolverNodeView extends AudioNodeView {
             canvasCtx.moveTo(0, y);
             canvasCtx.lineTo(this.canvas.width, y);
             canvasCtx.stroke();
-            console.log(y);
-
         }
 
         for (let y = middle - step; y > 0; y -= step) {
@@ -844,8 +842,6 @@ class ConvolverNodeView extends AudioNodeView {
             canvasCtx.moveTo(0, y);
             canvasCtx.lineTo(this.canvas.width, y);
             canvasCtx.stroke();
-            console.log(y);
-
         }
     }
 
