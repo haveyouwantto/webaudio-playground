@@ -831,6 +831,8 @@ class ConvolverNodeView extends AudioNodeView {
 
         for (var i = 0; i < this.canvas.width; i++) {
             var y = -(frequencyResponse[i]) * step + middle;
+            console.log(y, frequencyResponse);
+            
 
             if (i === 0) {
                 canvasCtx.moveTo(i, y);

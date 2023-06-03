@@ -151,7 +151,7 @@ function halfFFT(input) {
 function clampArray(array, i) {
     if (i < 0) return array[0];
     let n = array.length;
-    if (i > n) return array[n - 1];
+    if (i >= n) return array[n - 1];
     return array[i];
 }
 
