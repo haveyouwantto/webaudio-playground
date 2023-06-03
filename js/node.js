@@ -104,13 +104,14 @@ class AudioNodeView {
         if (removeable) this.innerDiv.addEventListener('dblclick', e => {
             this.remove();
         });
-        this.setTitle('Audio Node');
+        // this.setTitle('Audio Node');
         this.panel.appendChild(this.innerDiv);
 
         document.querySelector('body').appendChild(this.panel);
         nodes.add(this)
 
         this.settings = {};
+        this.innerDiv.appendChild(createLocaleItem('view.' + this.constructor.name));
     }
 
     moveTo(x, y) {
@@ -200,8 +201,8 @@ class Setting {
         }
 
         let text = document.createElement('span');
-        text.classList.add('settingText')
-        text.innerText = name;
+        text.classList.add('settingText');
+        text.appendChild(createLocaleItem('setting.' + name));
         this.div.appendChild(text);
         let field;
         switch (type) {
@@ -354,7 +355,7 @@ class Setting {
 class AudioOutputNodeView extends AudioNodeView {
     constructor() {
         super(8, 8, false);
-        this.setTitle('Audio Output');
+        // this.setTitle('Audio Output');
         this.addNewSetting('Node', '', null, ctx.destination);
     }
 }
@@ -362,7 +363,6 @@ class AudioOutputNodeView extends AudioNodeView {
 class OscillatorNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Oscillator');
         this.node = ctx.createOscillator();
         this.addNewSetting('Frequency', 'num', this.node.frequency.value, this.node.frequency, this.node.frequency);
         this.addNewSetting('Detune', 'num', this.node.detune.value, this.node.detune, this.node.detune);
@@ -374,7 +374,6 @@ class OscillatorNodeView extends AudioNodeView {
 class GainNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Gain');
         this.node = ctx.createGain();
         this.addNewSetting('Gain', 'num', this.node.gain.value, this.node.gain);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
@@ -384,7 +383,6 @@ class GainNodeView extends AudioNodeView {
 class DynamicsCompressorNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Compressor');
         this.node = ctx.createDynamicsCompressor();
         this.addNewSetting('Attack', 'num', this.node.attack.value, this.node.attack);
         this.addNewSetting('Release', 'num', this.node.release.value, this.node.release);
@@ -397,7 +395,6 @@ class DynamicsCompressorNodeView extends AudioNodeView {
 class PannerNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Panner');
         this.node = ctx.createPanner();
         this.addNewSetting('Position X', 'num', this.node.positionX.value, this.node.positionX);
         this.addNewSetting('Position Y', 'num', this.node.positionY.value, this.node.positionY);
@@ -412,7 +409,6 @@ class PannerNodeView extends AudioNodeView {
 class AudioSourceView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Audio Source');
         this.buffer = null;
         this.uploadBtn();
     }
@@ -452,9 +448,8 @@ class AudioSourceView extends AudioNodeView {
 class AudioRecorderView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Audio Recorder');
         this.rec = document.createElement('button');
-        this.rec.innerText = 'Record';
+        this.rec.textContent = getLocale('control.record');
         this.dest = ctx.createMediaStreamDestination();
         this.addNewSetting('Node', '', null, this.dest);
 
@@ -466,10 +461,10 @@ class AudioRecorderView extends AudioNodeView {
         this.rec.addEventListener("click", e => {
             if (!clicked) {
                 audio.src = '';
-                e.target.textContent = "Stop recording";
+                this.rec.textContent = getLocale('control.record-stop');
                 mediaRecorder = this.record();
             } else {
-                e.target.textContent = "Record";
+                this.rec.textContent = getLocale('control.record');
                 mediaRecorder.stop();
             }
             clicked = !clicked;
@@ -514,7 +509,6 @@ class AudioRecorderView extends AudioNodeView {
 class DelayNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Delay');
         this.node = ctx.createDelay();
         this.addNewSetting('Delay Time', 'num', this.node.delayTime.value, this.node.delayTime);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
@@ -524,7 +518,6 @@ class DelayNodeView extends AudioNodeView {
 class StereoPannerNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Stereo Panner');
         this.node = ctx.createStereoPanner();
         this.addNewSetting('Pan', 'num', this.node.pan.value, this.node.pan);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
@@ -534,7 +527,6 @@ class StereoPannerNodeView extends AudioNodeView {
 class BiquadFilterNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Biquad Filter');
         this.node = ctx.createBiquadFilter();
         this.addNewSetting('Frequency', 'num', this.node.frequency.value, this.node.frequency);
         this.addNewSetting('Detune', 'num', this.node.detune.value, this.node.detune);
@@ -548,7 +540,6 @@ class BiquadFilterNodeView extends AudioNodeView {
 class WaveShaperNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Wave Shaper');
         this.node = ctx.createWaveShaper();
         this.addNewSetting('Node', '', null, this.node, null, this.node);
     }
@@ -557,7 +548,6 @@ class WaveShaperNodeView extends AudioNodeView {
 class WavesView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Show Waves');
         this.node = ctx.createAnalyser();
         this.canvas = document.createElement('canvas');
         this.panel.appendChild(this.canvas);
@@ -602,7 +592,6 @@ class WavesView extends AudioNodeView {
 class FrequencyView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('FFT Frequency');
         this.node = ctx.createAnalyser();
         this.canvas = document.createElement('canvas');
         this.panel.appendChild(this.canvas);
@@ -642,7 +631,6 @@ class FrequencyView extends AudioNodeView {
 class SpectrumView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('FFT Waterfall');
         this.node = ctx.createAnalyser();
         this.node.smoothingTimeConstant = 0;
         this.canvas = document.createElement('canvas');
@@ -688,7 +676,6 @@ class SpectrumView extends AudioNodeView {
 class NoiseGeneratorView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Noise Generator');
         this.node = new AudioWorkletNode(ctx, 'white-noise');
         this.addNewSetting('Node', '', null, null, null, this.node);
     }
@@ -697,7 +684,6 @@ class NoiseGeneratorView extends AudioNodeView {
 class AbsoluteValueView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Absolute Value');
         this.node = new AudioWorkletNode(ctx, "absolute-value");
         this.addNewSetting('Node', '', null, this.node, null, this.node);
     }
@@ -706,7 +692,6 @@ class AbsoluteValueView extends AudioNodeView {
 class AudioInputNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Audio Input');
         navigator.mediaDevices.getUserMedia({ audio: { sampleRate: ctx.sampleRate }, video: false }).then(stream => {
             this.node = ctx.createMediaStreamSource(stream);
             this.addNewSetting('Node', '', null, null, null, this.node);
@@ -718,7 +703,6 @@ class AudioInputNodeView extends AudioNodeView {
 class ConstantSourceView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Constant');
         this.node = ctx.createConstantSource();
         this.addNewSetting('Value', 'num', this.node.offset.value, this.node.offset);
         this.addNewSetting('Node', '', null, null, null, this.node);
@@ -729,7 +713,6 @@ class ConstantSourceView extends AudioNodeView {
 class ConvolverNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Convolver');
         this.buffer = null;
         this.initCanvas();
         this.uploadBtn();
@@ -764,7 +747,7 @@ class ConvolverNodeView extends AudioNodeView {
         canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    drawLines(){
+    drawLines() {
         let middle = this.canvas.height * 0.5;
         let step = this.canvas.height / 20;
 
@@ -892,7 +875,7 @@ class ConvolverNodeView extends AudioNodeView {
         let div = document.createElement('div');
 
         let i = document.createElement('button');
-        i.innerText = "Impulse";
+        i.appendChild(createLocaleItem('control.impulse'));
         i.addEventListener('click', e => {
             this.drawMode = 0;
             this.updateGraph();
@@ -900,7 +883,7 @@ class ConvolverNodeView extends AudioNodeView {
         div.appendChild(i);
 
         let f = document.createElement('button');
-        f.innerText = "Frequency";
+        f.appendChild(createLocaleItem('control.frequency'));
         f.addEventListener('click', e => {
             this.drawMode = 1;
             this.updateGraph();
@@ -915,7 +898,6 @@ class ConvolverNodeView extends AudioNodeView {
 class NewView extends AudioNodeView {
     constructor() {
         super();
-        this.setTitle('Absolute Value');
         this.node = new AudioWorkletNode(ctx, "binary-input");
         this.addNewSetting('Node', '', null, null, null, this.node);
     }
@@ -1056,7 +1038,7 @@ document.addEventListener('contextmenu', e => {
 
     menuItems.forEach(item => {
         const menuItem = document.createElement('div');
-        menuItem.textContent = item.name;
+        menuItem.textContent = getLocale('view.'+item.view.name);
         menuItem.classList.add('menu-item')
         menuItem.addEventListener('click', () => {
             let view = new item.view(); // Create a new instance of the corresponding view
@@ -1069,7 +1051,7 @@ document.addEventListener('contextmenu', e => {
 
 
     const saveButton = document.createElement('div');
-    saveButton.textContent = "Save";
+    saveButton.textContent = getLocale('operation.save');
     saveButton.classList.add('menu-item')
     menu.appendChild(saveButton);
     // Attach a click event listener to the button
@@ -1091,7 +1073,7 @@ document.addEventListener('contextmenu', e => {
     });
 
     const loadButton = document.createElement('div');
-    loadButton.textContent = "Load";
+    loadButton.textContent = getLocale('operation.load');
     loadButton.classList.add('menu-item')
     menu.appendChild(loadButton);
     // Attach a click event listener to the button
