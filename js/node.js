@@ -305,7 +305,7 @@ class Setting {
             });
             this.outputTag = outputTag;
         }
-        
+
         this.input = input;
         this.output = output;
         settings[this.id] = this;
@@ -364,7 +364,7 @@ class Setting {
 
     disconnect(node) {
         // console.log(this,node);
-        
+
         this.outputs = this.outputs.filter(item => item !== node);
         node.inputs = node.inputs.filter(item => item !== this);
 
@@ -1042,20 +1042,20 @@ function save() {
     return map;
 }
 
-function load(json_data) {
+function load(save_object) {
     for (const node of nodes) {
         node.remove();
     }
 
     let ids = {}
 
-    for (const node of json_data.nodes) {
+    for (const node of save_object.nodes) {
         let view = new (eval(node.type))();
         view.moveTo(node.x, node.y);
 
         for (const name in node.settings) {
             if (Object.hasOwnProperty.call(node.settings, name)) {
-                const saved_setting = json_data.settings[node.settings[name]];
+                const saved_setting = save_object.settings[node.settings[name]];
 
                 const setting = view.getSetting(name);
                 try {
@@ -1068,9 +1068,9 @@ function load(json_data) {
         }
     }
 
-    for (const id in json_data.settings) {
-        if (Object.hasOwnProperty.call(json_data.settings, id)) {
-            const outputs = json_data.settings[id].outputs;
+    for (const id in save_object.settings) {
+        if (Object.hasOwnProperty.call(save_object.settings, id)) {
+            const outputs = save_object.settings[id].outputs;
             for (const output of outputs) {
                 try {
                     ids[id].connect(ids[output]);
@@ -1081,8 +1081,6 @@ function load(json_data) {
         }
     }
 }
-
-let out = new AudioOutputNodeView();
 
 let suspend = true;
 html.addEventListener('contextmenu', e => {
@@ -1192,6 +1190,17 @@ html.addEventListener('contextmenu', e => {
         }
     });
 
+    const clearAll = document.createElement('div');
+    clearAll.textContent = getLocale('operation.clear-all');
+    clearAll.classList.add('menu-item');
+    menu.appendChild(clearAll);
+    clearAll.addEventListener('click', () => {
+        for (const node of nodes) {
+            node.remove();
+        }
+        new AudioOutputNodeView();
+    });
+
 
     // Event listener to remove the menu when clicking outside of it
     const removeMenu = () => {
@@ -1213,3 +1222,17 @@ if (isMobile) {
         }
     });
 }
+
+window.onload = function () {
+    let lastNodes = window.localStorage.getItem('lastNodes');
+    if (lastNodes) {
+        load(JSON.parse(lastNodes));
+    }
+}
+
+window.onbeforeunload = function () {
+    window.localStorage.setItem('lastNodes', JSON.stringify(save()))
+    return "Are you sure you want to leave this page? Changes you made may not be saved.";
+};
+
+new AudioOutputNodeView();

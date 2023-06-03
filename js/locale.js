@@ -42,6 +42,7 @@ let defaultLocale = {
 
     "operation.save":"Save",
     "operation.load":"Load",
+    "operation.clear-all":"Clear All",
 
     "control.impulse":"Impulse",
     "control.frequency":"Frequency",

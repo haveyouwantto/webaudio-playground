@@ -42,6 +42,7 @@
 
     "operation.save":"保存",
     "operation.load":"加载",
+    "operation.clear-all":"清空",
 
     "control.impulse": "冲激",
     "control.frequency": "频率",
