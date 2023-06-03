@@ -740,25 +740,55 @@ class ConvolverNodeView extends AudioNodeView {
     updateGraph() {
         this.clearCanvas();
         try {
-            for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
-                switch (this.drawMode) {
-                    case 0:
+            switch (this.drawMode) {
+                case 0:
+                    for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
                         this.drawImpulse(channel);
-                        break;
-                    case 1:
+                    }
+                    break;
+                case 1:
+                    this.drawLines();
+                    for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
                         this.drawFrequency(channel);
-                        break;
-                }
+                    }
+                    break;
             }
         } catch (error) {
             console.log(error);
         }
     }
 
-    clearCanvas(){
+    clearCanvas() {
         let canvasCtx = this.canvas.getContext('2d');
         canvasCtx.fillStyle = 'rgb(240, 240, 240)';
         canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    drawLines(){
+        let middle = this.canvas.height * 0.5;
+        let step = this.canvas.height / 20;
+
+        let canvasCtx = this.canvas.getContext('2d');
+        canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, middle);
+        canvasCtx.lineTo(this.canvas.width, middle);
+        canvasCtx.stroke();
+
+        canvasCtx.strokeStyle = 'rgba(80, 80, 80, 0.7)';
+        for (let y = middle + step; y < this.canvas.height; y += step) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, y);
+            canvasCtx.lineTo(this.canvas.width, y);
+            canvasCtx.stroke();
+        }
+
+        for (let y = middle - step; y > 0; y -= step) {
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, y);
+            canvasCtx.lineTo(this.canvas.width, y);
+            canvasCtx.stroke();
+        }
     }
 
     drawImpulse(channel) {
@@ -810,9 +840,6 @@ class ConvolverNodeView extends AudioNodeView {
         canvasCtx.lineWidth = 1;
         canvasCtx.beginPath();
 
-        let middle = this.canvas.height * 0.5;
-        let step = this.canvas.height / 20;
-
         canvasCtx.strokeStyle = channelPalette[channel % channelPalette.length];
 
         for (var i = 0; i < this.canvas.width; i++) {
@@ -828,26 +855,6 @@ class ConvolverNodeView extends AudioNodeView {
 
 
 
-        canvasCtx.strokeStyle = 'rgba(240, 0, 0, 0.5)';
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, middle);
-        canvasCtx.lineTo(this.canvas.width, middle);
-        canvasCtx.stroke();
-
-        canvasCtx.strokeStyle = 'rgba(80, 80, 80, 0.7)';
-        for (let y = middle + step; y < this.canvas.height; y += step) {
-            canvasCtx.beginPath();
-            canvasCtx.moveTo(0, y);
-            canvasCtx.lineTo(this.canvas.width, y);
-            canvasCtx.stroke();
-        }
-
-        for (let y = middle - step; y > 0; y -= step) {
-            canvasCtx.beginPath();
-            canvasCtx.moveTo(0, y);
-            canvasCtx.lineTo(this.canvas.width, y);
-            canvasCtx.stroke();
-        }
     }
 
 
