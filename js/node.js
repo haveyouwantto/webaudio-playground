@@ -738,6 +738,7 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
     updateGraph() {
+        this.clearCanvas();
         try {
             for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
                 switch (this.drawMode) {
@@ -752,6 +753,12 @@ class ConvolverNodeView extends AudioNodeView {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    clearCanvas(){
+        let canvasCtx = this.canvas.getContext('2d');
+        canvasCtx.fillStyle = 'rgb(240, 240, 240)';
+        canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     drawImpulse(channel) {
@@ -800,8 +807,6 @@ class ConvolverNodeView extends AudioNodeView {
 
 
         let canvasCtx = this.canvas.getContext('2d');
-        canvasCtx.fillStyle = 'rgb(240, 240, 240)';
-        canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         canvasCtx.lineWidth = 1;
         canvasCtx.beginPath();
 
