@@ -734,11 +734,12 @@ class ConvolverNodeView extends AudioNodeView {
         this.initCanvas();
         this.uploadBtn();
         this.drawMode = 0; // 0 = Impulse, 1 = Frequency
+        this.frequencyResponse = null;
     }
 
     updateGraph() {
         try {
-            for (let channel = 0; channel <= this.buffer.numberOfChannels; channel++) {
+            for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
                 switch (this.drawMode) {
                     case 0:
                         this.drawImpulse(channel);
@@ -784,8 +785,16 @@ class ConvolverNodeView extends AudioNodeView {
         let buffer = this.buffer.getChannelData(channel);
 
         let a = performance.now();
-        let frequencyResponse = halfFFT(fft(fftPreprocess([...buffer]))).map(e => 20 * Math.log10(e.modulus));
-        console.log(frequencyResponse);
+        let frequencyResponse;
+        if (this.frequencyResponse == null) {
+            this.frequencyResponse = {}
+            frequencyResponse = halfFFT(fft(fftPreprocess([...buffer]))).map(e => 20 * Math.log10(e.modulus));
+            this.frequencyResponse[channel] = frequencyResponse;
+        } else if (this.frequencyResponse[channel] == null) {
+            frequencyResponse = halfFFT(fft(fftPreprocess([...buffer]))).map(e => 20 * Math.log10(e.modulus));
+            this.frequencyResponse[channel] = frequencyResponse;
+        }
+        frequencyResponse = this.frequencyResponse[channel];
 
         console.log(performance.now() - a);
 
@@ -800,10 +809,13 @@ class ConvolverNodeView extends AudioNodeView {
         let step = this.canvas.height / 20;
 
         canvasCtx.strokeStyle = channelPalette[channel % channelPalette.length];
-        var sliceWidth = this.canvas.width / frequencyResponse.length;
-        for (var i = 0; i < frequencyResponse.length; i++) {
-            var x = i * sliceWidth;
-            var y = -(frequencyResponse[i]) * 1.5 + this.canvas.height * 0.5;
+
+        for (var i = 0; i < this.canvas.width; i += 0.25) {
+            var index = parseInt(i / this.canvas.width * frequencyResponse.length);
+            console.log(index);
+            
+            var x = i;
+            var y = -(frequencyResponse[index]) * 1.5 + this.canvas.height * 0.5;
 
             if (i === 0) {
                 canvasCtx.moveTo(x, y);
@@ -857,7 +869,7 @@ class ConvolverNodeView extends AudioNodeView {
                     ctx.decodeAudioData(fileBuffer).then(buffer => {
                         node.buffer = buffer;
                         this.buffer = buffer;
-                        console.log(this);
+                        this.frequencyResponse = null;
                         this.updateGraph();
                     });
                 };
