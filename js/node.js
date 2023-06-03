@@ -1170,6 +1170,7 @@ if (isMobile) {
     html.addEventListener('click', e => {
         if (selectedPanel) {
             selectedPanel.moveTo(e.clientX + window.scrollX, e.clientY + window.scrollY);
+            selectedPanel = null;
         }
     });
 }
