@@ -101,8 +101,6 @@ class AudioNodeView {
             this.dragY = e.pageY - pos.y;
         });
         this.innerDiv.addEventListener('dragend', e => {
-            console.log(e);
-
             this.moveTo(e.pageX - this.dragX + window.scrollX, e.pageY - this.dragY + window.scrollY)
         });
         if (removeable) this.innerDiv.addEventListener('dblclick', e => {
@@ -124,7 +122,9 @@ class AudioNodeView {
             moveBtn.style.float = 'right';
             moveBtn.innerText = '\u2195';
             moveBtn.addEventListener('click', e => {
+                if (selectedPanel) selectedPanel.panel.classList.remove('selected');
                 selectedPanel = this;
+                this.panel.classList.add('selected');
                 e.stopPropagation();
             });
             this.innerDiv.appendChild(moveBtn);
@@ -229,9 +229,10 @@ class Setting {
                 inputTag.addEventListener('click', e => {
                     if (selectedOutput) {
                         selectedOutput.connect(this);
+                        selectedOutput.outputTag.classList.remove('selected');
                         selectedOutput = null;
                     } else {
-                        this.disconnectAll();
+                        this.disconnectIn();
                     }
                 });
             }
@@ -285,7 +286,10 @@ class Setting {
                 this.disconnectOut();
             });
             if (isMobile) outputTag.addEventListener('click', e => {
+                if (selectedOutput)
+                    selectedOutput.outputTag.classList.remove('selected');
                 selectedOutput = this;
+                outputTag.classList.add('selected');
             });
             this.outputTag = outputTag;
         }
@@ -307,23 +311,27 @@ class Setting {
     }
 
     connect(node) {
-        this.outputs.push(node);
-        node.inputs.push(this);
-        this.output.connect(node.input);
+        console.log(this.outputs.includes(node));
 
-        let pos1 = this.outputTag.getBoundingClientRect();
-        let pos2 = node.inputTag.getBoundingClientRect();
-        this.outputLines[node.id] = drawLine(
-            pos1.x + pos1.width / 2 + window.scrollX,
-            pos1.y + pos1.height / 2 + window.scrollY,
-            pos2.x + pos2.width / 2 + window.scrollX,
-            pos2.y + pos2.height / 2 + window.scrollY
-        );
-        console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
-        try {
-            this.output.start();
-        } catch (e) {
-            console.warn(e);
+        if (!this.outputs.includes(node)) {
+            this.outputs.push(node);
+            node.inputs.push(this);
+            this.output.connect(node.input);
+
+            let pos1 = this.outputTag.getBoundingClientRect();
+            let pos2 = node.inputTag.getBoundingClientRect();
+            this.outputLines[node.id] = drawLine(
+                pos1.x + pos1.width / 2 + window.scrollX,
+                pos1.y + pos1.height / 2 + window.scrollY,
+                pos2.x + pos2.width / 2 + window.scrollX,
+                pos2.y + pos2.height / 2 + window.scrollY
+            );
+            console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
+            try {
+                this.output.start();
+            } catch (e) {
+                console.warn(e);
+            }
         }
     }
 
@@ -1170,6 +1178,7 @@ if (isMobile) {
     html.addEventListener('click', e => {
         if (selectedPanel) {
             selectedPanel.moveTo(e.clientX + window.scrollX, e.clientY + window.scrollY);
+            selectedPanel.panel.classList.remove('selected');
             selectedPanel = null;
         }
     });

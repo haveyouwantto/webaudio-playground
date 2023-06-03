@@ -28,6 +28,10 @@ html {
     padding: 5px 5px 0px 5px;
 }
 
+.selected {
+    outline: 2.5px solid black;
+}
+
 .input-number {
     max-width: 80px;
     float: right;
