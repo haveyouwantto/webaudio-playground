@@ -824,9 +824,13 @@ class ConvolverNodeView extends AudioNodeView {
         canvasCtx.beginPath();
 
         canvasCtx.strokeStyle = channelPalette[channel % channelPalette.length];
+        let middle = this.canvas.height * 0.5;
+        let step = this.canvas.height / 200;
+        console.log(step);
+        
 
         for (var i = 0; i < this.canvas.width; i++) {
-            var y = -(frequencyResponse[i]) * 1.5 + this.canvas.height * 0.5;
+            var y = -(frequencyResponse[i]) * step + middle;
 
             if (i === 0) {
                 canvasCtx.moveTo(i, y);

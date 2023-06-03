@@ -84,32 +84,32 @@ function fft(input) {
 function resampleFloat32Array(input, outputLength) {
     const inputLength = input.length;
     const ratio = inputLength / outputLength;
-  
+
     const output = new Array(outputLength);
-  
+
     for (let i = 0; i < outputLength; i++) {
-      const index = i * ratio;
-      const floorIndex = Math.floor(index);
-      const ceilIndex = Math.ceil(index);
-  
-      if (floorIndex === ceilIndex) {
-        output[i] = input[floorIndex];
-      } else {
-        const fraction = index - floorIndex;
-        const floorValue = input[floorIndex];
-        const ceilValue = input[ceilIndex];
-  
-        output[i] = (1 - fraction) * floorValue + fraction * ceilValue;
-      }
+        const index = i * ratio;
+        const floorIndex = Math.floor(index);
+        const ceilIndex = Math.ceil(index);
+
+        if (floorIndex === ceilIndex) {
+            output[i] = input[floorIndex];
+        } else {
+            const fraction = index - floorIndex;
+            const floorValue = input[floorIndex];
+            const ceilValue = input[ceilIndex];
+
+            output[i] = (1 - fraction) * floorValue + fraction * ceilValue;
+        }
     }
-  
+
     return output;
-  }
-  
+}
+
 
 function fftPreprocess(data) {
     data = data.map(e => new Complex(e, 0));
-    
+
     const paddedLength = Math.pow(2, Math.ceil(Math.log2(data.length)));
     const paddedData = padWithZeros(data, paddedLength);
     return paddedData;
@@ -148,29 +148,36 @@ function halfFFT(input) {
     return halfOutput;
 }
 
+function clampArray(array, i) {
+    if (i < 0) return array[0];
+    let n = array.length;
+    if (i > n) return array[n - 1];
+    return array[i];
+}
+
 function resampleArray(array, desiredLength) {
     const originalLength = array.length;
     const ratio = originalLength / desiredLength;
-  
+
     const result = new Array(desiredLength);
-  
+
     for (let i = 0; i < desiredLength; i++) {
-      const sampleIndex = i * ratio;
-      const floorIndex = Math.floor(sampleIndex);
-      const frac = sampleIndex - floorIndex;
-  
-      const x0 = array[floorIndex - 1] || 0;
-      const x1 = array[floorIndex];
-      const x2 = array[floorIndex + 1] || 0;
-      const x3 = array[floorIndex + 2] || 0;
-  
-      const a0 = x3 - x2 - x0 + x1;
-      const a1 = x0 - x1 - a0;
-      const a2 = x2 - x0;
-      const a3 = x1;
-  
-      result[i] = a0 * frac * frac * frac + a1 * frac * frac + a2 * frac + a3;
+        const sampleIndex = i * ratio;
+        const floorIndex = Math.floor(sampleIndex);
+        const frac = sampleIndex - floorIndex;
+
+        const x0 = clampArray(array, floorIndex - 1)
+        const x1 = clampArray(array, floorIndex)
+        const x2 = clampArray(array, floorIndex + 1)
+        const x3 = clampArray(array, floorIndex + 2)
+
+        const a0 = x3 - x2 - x0 + x1;
+        const a1 = x0 - x1 - a0;
+        const a2 = x2 - x0;
+        const a3 = x1;
+
+        result[i] = a0 * frac * frac * frac + a1 * frac * frac + a2 * frac + a3;
     }
-  
+
     return result;
-  }
+}

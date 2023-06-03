@@ -89,6 +89,7 @@ function getLocale(key) {
 function setLocale(language = 'en-US') {
     if (language == 'en-US') {
         currentLocale = defaultLocale;
+        updateHTML();
     }
     else {
         fetch("lang/" + language + ".json").then(r => {
