@@ -772,6 +772,15 @@ class ConvolverNodeView extends AudioNodeView {
             canvasCtx.lineTo(this.canvas.width, y);
             canvasCtx.stroke();
         }
+
+        let nyquist = ctx.sampleRate / 2;
+        for (let i = 4000; i < nyquist; i += 4000) {
+            let x = i / nyquist * this.canvas.width;
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(x, 0);
+            canvasCtx.lineTo(x, this.canvas.height);
+            canvasCtx.stroke();
+        }
     }
 
     drawImpulse(channel) {
@@ -827,7 +836,7 @@ class ConvolverNodeView extends AudioNodeView {
         let middle = this.canvas.height * 0.5;
         let step = this.canvas.height / 160;
         console.log(step);
-        
+
 
         for (var i = 0; i < this.canvas.width; i++) {
             var y = -(frequencyResponse[i]) * step + middle;
@@ -1042,7 +1051,7 @@ document.addEventListener('contextmenu', e => {
 
     menuItems.forEach(item => {
         const menuItem = document.createElement('div');
-        menuItem.textContent = getLocale('view.'+item.view.name);
+        menuItem.textContent = getLocale('view.' + item.view.name);
         menuItem.classList.add('menu-item')
         menuItem.addEventListener('click', () => {
             let view = new item.view(); // Create a new instance of the corresponding view
