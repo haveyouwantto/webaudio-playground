@@ -794,7 +794,7 @@ class ConvolverNodeView extends AudioNodeView {
             frequencyResponse = halfFFT(fft(fftPreprocess([...buffer]))).map(e => 20 * Math.log10(e.modulus));
             this.frequencyResponse[channel] = frequencyResponse;
         }
-        frequencyResponse = this.frequencyResponse[channel];
+        frequencyResponse = resampleArray(this.frequencyResponse[channel], this.canvas.width);
 
         console.log(performance.now() - a);
 
@@ -810,17 +810,13 @@ class ConvolverNodeView extends AudioNodeView {
 
         canvasCtx.strokeStyle = channelPalette[channel % channelPalette.length];
 
-        for (var i = 0; i < this.canvas.width; i += 0.25) {
-            var index = parseInt(i / this.canvas.width * frequencyResponse.length);
-            console.log(index);
-            
-            var x = i;
-            var y = -(frequencyResponse[index]) * 1.5 + this.canvas.height * 0.5;
+        for (var i = 0; i < this.canvas.width; i++) {
+            var y = -(frequencyResponse[i]) * 1.5 + this.canvas.height * 0.5;
 
             if (i === 0) {
-                canvasCtx.moveTo(x, y);
+                canvasCtx.moveTo(i, y);
             } else {
-                canvasCtx.lineTo(x, y);
+                canvasCtx.lineTo(i, y);
             }
         }
         canvasCtx.stroke();

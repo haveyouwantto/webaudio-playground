@@ -147,3 +147,30 @@ function halfFFT(input) {
 
     return halfOutput;
 }
+
+function resampleArray(array, desiredLength) {
+    const originalLength = array.length;
+    const ratio = originalLength / desiredLength;
+  
+    const result = new Array(desiredLength);
+  
+    for (let i = 0; i < desiredLength; i++) {
+      const sampleIndex = i * ratio;
+      const floorIndex = Math.floor(sampleIndex);
+      const frac = sampleIndex - floorIndex;
+  
+      const x0 = array[floorIndex - 1] || 0;
+      const x1 = array[floorIndex];
+      const x2 = array[floorIndex + 1] || 0;
+      const x3 = array[floorIndex + 2] || 0;
+  
+      const a0 = x3 - x2 - x0 + x1;
+      const a1 = x0 - x1 - a0;
+      const a2 = x2 - x0;
+      const a3 = x1;
+  
+      result[i] = a0 * frac * frac * frac + a1 * frac * frac + a2 * frac + a3;
+    }
+  
+    return result;
+  }
