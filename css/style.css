@@ -26,6 +26,7 @@ html {
     min-height: 60px;
     border-radius: 5px;
     padding: 5px 5px 0px 5px;
+    z-index: 5;
 }
 
 .selected {
@@ -124,7 +125,7 @@ button:hover, input::file-selector-button:hover {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 999;
+    z-index: 4;
     pointer-events: none;
 }
 
