@@ -285,6 +285,7 @@ class Setting {
                 break
         }
         this.field = field;
+
         if (output) {
             let outputTag = document.createElement('div');
             outputTag.className = 'output';
@@ -304,6 +305,7 @@ class Setting {
             });
             this.outputTag = outputTag;
         }
+        
         this.input = input;
         this.output = output;
         settings[this.id] = this;
@@ -361,10 +363,10 @@ class Setting {
     }
 
     disconnect(node) {
-
-        // FIXME remove item
-        // this.outputs.remove(node);
-        // node.inputs.remove(this);
+        // console.log(this,node);
+        
+        this.outputs = this.outputs.filter(item => item !== node);
+        node.inputs = node.inputs.filter(item => item !== this);
 
         this.output.disconnect(node.input);
         document.querySelector('#lines').removeChild(this.outputLines[node.id]);
