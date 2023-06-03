@@ -5,7 +5,17 @@
 }
 
 html {
-    background-color: rgb(240, 240, 240);
+    background:
+        linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), 
+        linear-gradient(-90deg, rgba(0,0,0,.1) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.1) 1px, transparent 1px),
+        rgb(240, 240, 240);
+    background-size:
+        10px 10px,
+        10px 10px,
+        100px 100px,
+        100px 100px
 }
 
 .panel {
@@ -104,8 +114,8 @@ button:hover, input::file-selector-button:hover {
 }
 
 #lines {
-    width: 100%;
-    height: 100%;
+    width: 1000%;
+    height: 1000%;
     position: absolute;
     top: 0;
     left: 0;

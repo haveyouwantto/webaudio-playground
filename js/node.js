@@ -95,7 +95,9 @@ class AudioNodeView {
             this.dragY = e.pageY - pos.y;
         });
         this.innerDiv.addEventListener('dragend', e => {
-            this.moveTo(e.pageX - this.dragX, e.pageY - this.dragY)
+            console.log(e);
+
+            this.moveTo(e.pageX - this.dragX + window.scrollX, e.pageY - this.dragY + window.scrollY)
             for (const setting in this.settings) {
                 const element = this.settings[setting];
                 element.updateLines();
@@ -272,7 +274,12 @@ class Setting {
 
         let pos1 = this.outputTag.getBoundingClientRect();
         let pos2 = node.inputTag.getBoundingClientRect();
-        this.outputLines[node.id] = drawLine(pos1.x + pos1.width / 2, pos1.y + pos1.height / 2, pos2.x + pos2.width / 2, pos2.y + pos2.height / 2);
+        this.outputLines[node.id] = drawLine(
+            pos1.x + pos1.width / 2 + window.scrollX,
+            pos1.y + pos1.height / 2 + window.scrollY,
+            pos2.x + pos2.width / 2 + window.scrollX,
+            pos2.y + pos2.height / 2 + window.scrollY
+        );
         console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
         try {
             this.output.start();
@@ -308,10 +315,10 @@ class Setting {
                 let e = this.outputLines[node];
                 let pos1 = this.outputTag.getBoundingClientRect();
                 let pos2 = node.inputTag.getBoundingClientRect();
-                this.outputLines[node.id].setAttribute('x1', pos1.x + pos1.width / 2);
-                this.outputLines[node.id].setAttribute('y1', pos1.y + pos1.height / 2);
-                this.outputLines[node.id].setAttribute('x2', pos2.x + pos2.width / 2);
-                this.outputLines[node.id].setAttribute('y2', pos2.y + pos2.height / 2);
+                this.outputLines[node.id].setAttribute('x1', pos1.x + pos1.width / 2 + window.scrollX);
+                this.outputLines[node.id].setAttribute('y1', pos1.y + pos1.height / 2 + window.scrollY);
+                this.outputLines[node.id].setAttribute('x2', pos2.x + pos2.width / 2 + window.scrollX);
+                this.outputLines[node.id].setAttribute('y2', pos2.y + pos2.height / 2 + window.scrollY);
             } catch (error) {
                 console.warn(error);
             }
@@ -1039,8 +1046,8 @@ document.addEventListener('contextmenu', e => {
     ];
 
 
-    const mouseX = e.clientX; // X-coordinate of the mouse
-    const mouseY = e.clientY; // Y-coordinate of the mouse
+    const mouseX = e.clientX + window.scrollX; // X-coordinate of the mouse
+    const mouseY = e.clientY + window.scrollY; // Y-coordinate of the mouse
 
     const menu = document.createElement('div'); // Create a new div for the menu
     menu.classList.add('panel')
