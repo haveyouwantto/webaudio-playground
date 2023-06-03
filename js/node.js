@@ -1,4 +1,5 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var isMobile = 'ontouchstart' in document.documentElement;
 let ctx = new AudioContext();
 ctx.audioWorklet.addModule('js/modules.js').then(() => {
 
@@ -6,6 +7,11 @@ ctx.audioWorklet.addModule('js/modules.js').then(() => {
 
 let settings = {};
 let nodes = new Set();
+
+let selectedOutput = null;
+let selectedPanel = null;
+
+let html = document.documentElement;
 
 function drawLine(x1, y1, x2, y2) {
     var svgns = "http://www.w3.org/2000/svg";
@@ -98,14 +104,31 @@ class AudioNodeView {
             console.log(e);
 
             this.moveTo(e.pageX - this.dragX + window.scrollX, e.pageY - this.dragY + window.scrollY)
-            for (const setting in this.settings) {
-                const element = this.settings[setting];
-                element.updateLines();
-            }
         });
         if (removeable) this.innerDiv.addEventListener('dblclick', e => {
             this.remove();
         });
+        this.innerDiv.appendChild(createLocaleItem('view.' + this.constructor.name));
+        if (isMobile) {
+            if (removeable) {
+                let removeBtn = document.createElement('span');
+                removeBtn.style.float = 'right';
+                removeBtn.innerText = '\u2715';
+                removeBtn.style.marginLeft = '10px';
+                removeBtn.addEventListener('click', e => {
+                    this.remove();
+                });
+                this.innerDiv.appendChild(removeBtn);
+            }
+            let moveBtn = document.createElement('span');
+            moveBtn.style.float = 'right';
+            moveBtn.innerText = '\u2195';
+            moveBtn.addEventListener('click', e => {
+                selectedPanel = this;
+                e.stopPropagation();
+            });
+            this.innerDiv.appendChild(moveBtn);
+        }
         // this.setTitle('Audio Node');
         this.panel.appendChild(this.innerDiv);
 
@@ -113,7 +136,6 @@ class AudioNodeView {
         nodes.add(this)
 
         this.settings = {};
-        this.innerDiv.appendChild(createLocaleItem('view.' + this.constructor.name));
     }
 
     moveTo(x, y) {
@@ -121,6 +143,10 @@ class AudioNodeView {
         this.y = y;
         this.panel.style.left = x + 'px';
         this.panel.style.top = y + 'px';
+        for (const setting in this.settings) {
+            const element = this.settings[setting];
+            element.updateLines();
+        }
     }
 
     remove() {
@@ -199,6 +225,16 @@ class Setting {
             inputTag.addEventListener('dblclick', e => {
                 this.disconnectIn();
             });
+            if (isMobile) {
+                inputTag.addEventListener('click', e => {
+                    if (selectedOutput) {
+                        selectedOutput.connect(this);
+                        selectedOutput = null;
+                    } else {
+                        this.disconnectAll();
+                    }
+                });
+            }
             this.inputTag = inputTag;
         }
 
@@ -247,6 +283,9 @@ class Setting {
             });
             outputTag.addEventListener('dblclick', e => {
                 this.disconnectOut();
+            });
+            if (isMobile) outputTag.addEventListener('click', e => {
+                selectedOutput = this;
             });
             this.outputTag = outputTag;
         }
@@ -1008,7 +1047,7 @@ function load(json_data) {
 let out = new AudioOutputNodeView();
 
 let suspend = true;
-document.addEventListener('contextmenu', e => {
+html.addEventListener('contextmenu', e => {
     e.preventDefault(); // Prevent the default right-click context menu
 
     if (suspend) {
@@ -1127,5 +1166,10 @@ document.addEventListener('contextmenu', e => {
     document.body.appendChild(menu); // Append the menu to the document body
 });
 
-
-// [{"type":"AudioOutputNodeView","x":67,"y":10,"settings":{}},{"type":"AudioSourceView","x":52,"y":25,"settings":{}},{"type":"FrequencyView","x":82,"y":14,"settings":{}},{"type":"SpectrumView","x":94,"y":15,"settings":{}},{"type":"WavesView","x":123,"y":5,"settings":{}},{"type":"OscillatorNodeView","x":107,"y":21,"settings":{}},{"type":"GainNodeView","x":81,"y":16,"settings":{}},{"type":"GainNodeView","x":99,"y":27,"settings":{}},{"type":"OscillatorNodeView","x":86,"y":22,"settings":{}},{"type":"GainNodeView","x":75,"y":17,"settings":{}},{"type":"GainNodeView","x":99,"y":14,"settings":{}},{"type":"AudioSourceView","x":142,"y":24,"settings":{}},{"type":"GainNodeView","x":82,"y":14,"settings":{}},{"type":"BiquadFilterNodeView","x":44,"y":7,"settings":{}},{"type":"AbsoluteValueView","x":75,"y":19,"settings":{}},{"type":"FrequencyView","x":168,"y":9,"settings":{}},{"type":"SpectrumView","x":129,"y":23,"settings":{}},{"type":"WavesView","x":149,"y":23,"settings":{}},{"type":"BiquadFilterNodeView","x":104,"y":18,"settings":{}},{"type":"AudioRecorderView","x":84,"y":24,"settings":{}},{"type":"DynamicsCompressorNodeView","x":110,"y":23,"settings":{}},{"type":"GainNodeView","x":102,"y":5,"settings":{}},{"type":"NoiseGeneratorView","x":85,"y":14,"settings":{}},{"type":"GainNodeView","x":50,"y":18,"settings":{}}]
+if (isMobile) {
+    html.addEventListener('click', e => {
+        if (selectedPanel) {
+            selectedPanel.moveTo(e.clientX + window.scrollX, e.clientY + window.scrollY);
+        }
+    });
+}

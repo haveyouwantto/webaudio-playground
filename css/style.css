@@ -64,6 +64,7 @@ button:hover, input::file-selector-button:hover {
     padding: 0px 15px;
     cursor:  move;
     font-family: sans-serif;
+    font-weight: 500;
 }
 
 .menu-item {
