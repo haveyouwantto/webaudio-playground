@@ -38,6 +38,7 @@ let defaultLocale = {
     "setting.Orientation Y": "Orientation Y",
     "setting.Orientation Z": "Orientation Z",
     "setting.Pan": "Pan",
+    "setting.Play Directly": "Play Directly",
 
     "operation.save":"Save",
     "operation.load":"Load",

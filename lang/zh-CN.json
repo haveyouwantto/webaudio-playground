@@ -38,6 +38,7 @@
     "setting.Orientation Y": "方向 Y",
     "setting.Orientation Z": "方向 Z",
     "setting.Pan": "位置",
+    "setting.Play Directly": "直接播放",
 
     "operation.save":"保存",
     "operation.load":"加载",

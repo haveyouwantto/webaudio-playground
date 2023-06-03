@@ -272,6 +272,17 @@ class Setting {
                     valChange['type'] = field.value;
                 });
                 this.div.appendChild(field);
+                break
+            case 'checkbox':
+                field = document.createElement('input');
+                field.type = 'checkbox';
+                field.checked = value;
+                field.addEventListener('change', e => {
+                    valChange(e.target.checked);
+                });
+                valChange(value);
+                this.div.appendChild(field);
+                break
         }
         this.field = field;
         if (output) {
@@ -298,6 +309,17 @@ class Setting {
         settings[this.id] = this;
     }
 
+    getValue() {
+        switch (this.type) {
+            case 'num':
+                return this.valChange.value;
+            case 'list':
+                return this.valChange.type;
+            case 'checkbox':
+                return this.field.checked;
+        }
+    }
+
     edit(newValue) {
         this.field.value = newValue;
         switch (this.type) {
@@ -306,7 +328,10 @@ class Setting {
                 return;
             case 'list':
                 this.valChange.type = newValue;
-                return
+                return;
+            case 'checkbox':
+                this.field.checked = newValue;
+                this.valChange(newValue);
         }
     }
 
@@ -505,10 +530,12 @@ class AudioRecorderView extends AudioNodeView {
         this.rec = document.createElement('button');
         this.rec.textContent = getLocale('control.record');
         this.dest = ctx.createMediaStreamDestination();
-        this.addNewSetting('Node', '', null, this.dest);
 
         let audio = document.createElement('audio');
         audio.controls = true;
+
+
+        let recordedOutput = ctx.createMediaElementSource(audio);
 
         let clicked = false;
         let mediaRecorder;
@@ -522,6 +549,14 @@ class AudioRecorderView extends AudioNodeView {
                 mediaRecorder.stop();
             }
             clicked = !clicked;
+        });
+        this.addNewSetting('Node', '', null, this.dest, null, recordedOutput);
+        this.addNewSetting('Play Directly', 'checkbox', true, null, checked => {
+            if (checked) {
+                recordedOutput.connect(ctx.destination);
+            } else {
+                recordedOutput.disconnect(ctx.destination);
+            }
         });
 
         this.panel.appendChild(this.rec);
@@ -982,14 +1017,7 @@ function save() {
             "type": s.type,
             "outputs": []
         }
-        switch (s.type) {
-            case 'num':
-                n.value = s.valChange.value;
-                break;
-            case 'list':
-                n.value = s.valChange.type;
-                break
-        }
+        n.value = s.getValue();
         for (const id in s.outputLines) {
             n.outputs.push(id);
         }
