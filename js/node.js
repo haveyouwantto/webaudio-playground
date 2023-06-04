@@ -984,7 +984,27 @@ class ConvolverNodeView extends AudioNodeView {
         })
         div.appendChild(f);
 
+        this.maximized = false;
+        this.canvas.addEventListener('mousedown', e => {
+            // alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+            this.maximized = !this.maximized;
+            this.setMaximized(this.maximized);
+        });
+
         this.panel.appendChild(div);
+    }
+
+    setMaximized(value) {
+        if (value) {
+            this.canvas.classList.add('maximized');
+            this.canvas.width = this.canvas.offsetWidth;
+            this.canvas.height = this.canvas.offsetHeight;
+        } else {
+            this.canvas.classList.remove('maximized');
+            this.canvas.width = 300;
+            this.canvas.height = 150;
+        }
+        this.updateGraph();
     }
 }
 
