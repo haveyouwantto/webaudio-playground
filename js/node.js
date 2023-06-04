@@ -1001,16 +1001,20 @@ class SpectrumViewV2 extends AudioNodeView {
         this.canvas.height = 300;
         this.panel.appendChild(this.canvas);
         this.addNewSetting('Node', '', null, this.node, null, this.node2);
-        this.update();
+        this.maximized = false;
+        this.animationId = 0;
         this.canvas.addEventListener('mousedown', e => {
-            alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+            // alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+            this.maximized = !this.maximized;
+            this.setMaximized(this.maximized);
         });
+        this.update();
     }
 
     update() {
         let buffer = new Uint8Array(this.node.frequencyBinCount);
         let buffer2 = new Uint8Array(this.node2.frequencyBinCount);
-        
+
         let node = this.node;
         let node2 = this.node2;
         let canvasCtx = this.canvas.getContext('2d');
@@ -1018,16 +1022,21 @@ class SpectrumViewV2 extends AudioNodeView {
 
         let canvas = this.canvas;
 
-        let half = canvas.height / 2;
+        let half = parseInt(canvas.height / 2);
+
+        canvas2.width = canvas.width;
+        canvas2.height = half;
+        console.log(canvas2);
+
 
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        function draw() {
-            requestAnimationFrame(draw);
+        let draw = () => {
+            this.animationId = requestAnimationFrame(draw);
             node.getByteFrequencyData(buffer);
             node2.getByteFrequencyData(buffer2);
 
-            canvas2.getContext('2d').drawImage(canvas, 0, half, canvas.width, half, 0,0,canvas.width,half);
+            canvas2.getContext('2d').drawImage(canvas, 0, half, canvas.width, half, 0, 0, canvas.width, half);
 
             canvasCtx.fillStyle = 'rgb(0, 0, 0)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1056,9 +1065,24 @@ class SpectrumViewV2 extends AudioNodeView {
             }
 
             canvasCtx.stroke();
-            canvasCtx.drawImage(canvas2, 0, half+1, canvas.width, half);
+            canvasCtx.drawImage(canvas2, 0, half + 1, canvas.width, half);
         };
-        draw();
+
+        this.animationId = requestAnimationFrame(draw);
+    }
+
+    setMaximized(value) {
+        if (value) {
+            this.canvas.classList.add('maximized');
+            this.canvas.width = this.canvas.offsetWidth;
+            this.canvas.height = this.canvas.offsetHeight;
+        } else {
+            this.canvas.classList.remove('maximized');
+            this.canvas.width = 300;
+            this.canvas.height = 300;
+        }
+        cancelAnimationFrame(this.animationId);
+        this.update();
     }
 }
 
