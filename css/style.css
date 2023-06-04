@@ -120,7 +120,7 @@ button:hover, input::file-selector-button:hover {
 }
 
 #lines {
-    width: 4096px;
+    width: 8192px;
     height: 4096px;
     position: absolute;
     top: 0;

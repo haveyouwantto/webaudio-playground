@@ -108,16 +108,6 @@ class AudioNodeView {
         });
         this.innerDiv.appendChild(createLocaleItem('view.' + this.constructor.name));
         if (isMobile) {
-            if (removeable) {
-                let removeBtn = document.createElement('span');
-                removeBtn.style.float = 'right';
-                removeBtn.innerText = '\u2715';
-                removeBtn.style.marginLeft = '10px';
-                removeBtn.addEventListener('click', e => {
-                    this.remove();
-                });
-                this.innerDiv.appendChild(removeBtn);
-            }
             let moveBtn = document.createElement('span');
             moveBtn.style.float = 'right';
             moveBtn.innerText = '\u2195';
