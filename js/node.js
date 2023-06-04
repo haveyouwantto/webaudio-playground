@@ -122,7 +122,7 @@ class AudioNodeView {
         // this.setTitle('Audio Node');
         this.panel.appendChild(this.innerDiv);
 
-        document.querySelector('body').appendChild(this.panel);
+        document.querySelector('#workspace').appendChild(this.panel);
         nodes.add(this)
 
         this.settings = {};
@@ -147,7 +147,7 @@ class AudioNodeView {
                 delete settings[element.id]
             }
         }
-        document.querySelector('body').removeChild(this.panel);
+        document.querySelector('#workspace').removeChild(this.panel);
         nodes.delete(this);
     }
 
