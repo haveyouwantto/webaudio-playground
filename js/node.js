@@ -108,16 +108,12 @@ class AudioNodeView {
         });
         this.innerDiv.appendChild(createLocaleItem('view.' + this.constructor.name));
         if (isMobile) {
-            let moveBtn = document.createElement('span');
-            moveBtn.style.float = 'right';
-            moveBtn.innerText = '\u2195';
-            moveBtn.addEventListener('click', e => {
+            this.innerDiv.addEventListener('click', e => {
                 if (selectedPanel) selectedPanel.panel.classList.remove('selected');
                 selectedPanel = this;
                 this.panel.classList.add('selected');
                 e.stopPropagation();
             });
-            this.innerDiv.appendChild(moveBtn);
         }
         // this.setTitle('Audio Node');
         this.panel.appendChild(this.innerDiv);
