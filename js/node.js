@@ -995,10 +995,12 @@ class ConvolverNodeView extends AudioNodeView {
             this.canvas.classList.add('maximized');
             this.canvas.width = this.canvas.offsetWidth;
             this.canvas.height = this.canvas.offsetHeight;
+            this.panel.classList.add('ontop');
         } else {
             this.canvas.classList.remove('maximized');
             this.canvas.width = 300;
             this.canvas.height = 150;
+            this.panel.classList.remove('ontop');
         }
         this.updateGraph();
     }
@@ -1092,10 +1094,12 @@ class SpectrumViewV2 extends AudioNodeView {
             this.canvas.classList.add('maximized');
             this.canvas.width = this.canvas.offsetWidth;
             this.canvas.height = this.canvas.offsetHeight;
+            this.panel.classList.add('ontop');
         } else {
             this.canvas.classList.remove('maximized');
             this.canvas.width = 300;
             this.canvas.height = 300;
+            this.panel.classList.remove('ontop');
         }
         cancelAnimationFrame(this.animationId);
         this.update();
