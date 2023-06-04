@@ -17,6 +17,7 @@
     "view.WavesView": "波形显示",
     "view.FrequencyView": "频率显示",
     "view.SpectrumView": "瀑布图",
+    "view.SpectrumViewV2": "频谱显示",
 
     "setting.Node": "节点",
     "setting.Value": "数值",

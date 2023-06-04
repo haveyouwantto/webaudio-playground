@@ -17,6 +17,7 @@ let defaultLocale = {
     "view.WavesView": "Waves Viewer",
     "view.FrequencyView": "Frequency Viewer",
     "view.SpectrumView": "Waterfall",
+    "view.SpectrumViewV2": "Spectrum Display",
 
     "setting.Node": "Node",
     "setting.Value": "Value",

@@ -989,6 +989,79 @@ class ConvolverNodeView extends AudioNodeView {
 }
 
 
+class SpectrumViewV2 extends AudioNodeView {
+    constructor() {
+        super();
+        this.node = ctx.createAnalyser();
+        this.node2 = ctx.createAnalyser();
+        this.node.smoothingTimeConstant = 0;
+        this.node.connect(this.node2);
+
+        this.canvas = document.createElement('canvas');
+        this.canvas.height = 300;
+        this.panel.appendChild(this.canvas);
+        this.addNewSetting('Node', '', null, this.node, null, this.node2);
+        this.update();
+        this.canvas.addEventListener('mousedown', e => {
+            alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+        });
+    }
+
+    update() {
+        let buffer = new Uint8Array(this.node.frequencyBinCount);
+        let buffer2 = new Uint8Array(this.node2.frequencyBinCount);
+        
+        let node = this.node;
+        let node2 = this.node2;
+        let canvasCtx = this.canvas.getContext('2d');
+        let canvas2 = document.createElement('canvas');
+
+        let canvas = this.canvas;
+
+        let half = canvas.height / 2;
+
+        canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        function draw() {
+            requestAnimationFrame(draw);
+            node.getByteFrequencyData(buffer);
+            node2.getByteFrequencyData(buffer2);
+
+            canvas2.getContext('2d').drawImage(canvas, 0, half, canvas.width, half, 0,0,canvas.width,half);
+
+            canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const barWidth = buffer.length / canvas.width;
+            let posX = 0;
+            canvasCtx.strokeStyle = '#ffffff';
+            // canvasCtx.lineWidth = 2;
+            canvasCtx.beginPath();
+            for (let i = 0; i < buffer2.length; i += barWidth) {
+                let barHeight = buffer2[parseInt(i)] / 255 * half;
+                if (barHeight < 0) barHeight = 0;
+                canvasCtx.lineTo(posX, half - 1 - barHeight);
+
+                posX++;
+            }
+
+            canvasCtx.fillRect(0, half, canvas.width, half);
+            posX = 0;
+            for (let i = 0; i < buffer.length; i += barWidth) {
+                let barHeight = buffer[parseInt(i)] / 255 * half;
+                if (barHeight < 0) barHeight = 0;
+                canvasCtx.fillStyle = colorTrans(palette, barHeight / half);
+                canvasCtx.fillRect(posX, half, 1, 1);
+                posX++;
+            }
+
+            canvasCtx.stroke();
+            canvasCtx.drawImage(canvas2, 0, half+1, canvas.width, half);
+        };
+        draw();
+    }
+}
+
 class NewView extends AudioNodeView {
     constructor() {
         super();
@@ -1083,31 +1156,30 @@ html.addEventListener('contextmenu', e => {
 
     const menuItems = [
         // Generators
-        { view: ConstantSourceView, name: 'Constant' },
-        { view: OscillatorNodeView, name: 'Oscillator' },
-        { view: NoiseGeneratorView, name: 'Noise Generator' },
+        { view: ConstantSourceView },
+        { view: OscillatorNodeView },
+        { view: NoiseGeneratorView },
 
         // Processors
-        { view: GainNodeView, name: 'Gain' },
-        { view: DynamicsCompressorNodeView, name: 'Dynamics Compressor' },
-        { view: DelayNodeView, name: 'Delay' },
-        { view: BiquadFilterNodeView, name: 'Biquad Filter' },
-        { view: ConvolverNodeView, name: 'Convolver' },
-        { view: AbsoluteValueView, name: 'Absolute Value' },
+        { view: GainNodeView },
+        { view: DynamicsCompressorNodeView },
+        { view: DelayNodeView },
+        { view: BiquadFilterNodeView },
+        { view: ConvolverNodeView },
+        { view: AbsoluteValueView },
 
         // Spatialization
-        { view: PannerNodeView, name: 'Panner' },
-        { view: StereoPannerNodeView, name: 'Stereo Panner' },
+        { view: PannerNodeView },
+        { view: StereoPannerNodeView },
 
         // Audio I/O
-        { view: AudioSourceView, name: 'Audio Source' },
-        { view: AudioInputNodeView, name: 'Audio Input' },
-        { view: AudioRecorderView, name: 'Audio Recorder' },
+        { view: AudioSourceView },
+        { view: AudioInputNodeView },
+        { view: AudioRecorderView },
 
         // Visualizers
-        { view: WavesView, name: 'Waves Viewer' },
-        { view: FrequencyView, name: 'Frequency Viewer' },
-        { view: SpectrumView, name: 'Spectrum Viewer' },
+        { view: WavesView },
+        { view: SpectrumViewV2 }
     ];
 
 
