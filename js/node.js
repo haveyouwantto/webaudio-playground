@@ -117,7 +117,7 @@ class FullScreen {
 
     followScreen() {
         let pos = window.visualViewport;
-        fs.setPos(pos.offsetTop, pos.offsetLeft, pos.scale);
+        fs.setPos(pos.offsetTop, pos.offsetLeft, 1 / pos.scale);
     }
 }
 
