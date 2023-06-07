@@ -1,9 +1,9 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var isMobile = 'ontouchstart' in document.documentElement;
 let ctx = new AudioContext();
-// ctx.audioWorklet.addModule('js/modules.js').then(() => {
+ctx.audioWorklet.addModule('js/modules.js').then(() => {
 
-// });
+});
 
 let settings = {};
 let nodes = new Set();
