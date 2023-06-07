@@ -2,7 +2,10 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var isMobile = 'ontouchstart' in document.documentElement;
 let ctx = new AudioContext();
 ctx.audioWorklet.addModule('js/modules.js').then(() => {
-
+    let lastNodes = window.localStorage.getItem('lastNodes');
+    if (lastNodes) {
+        load(JSON.parse(lastNodes));
+    }
 });
 
 let settings = {};
@@ -693,15 +696,18 @@ class WavesView extends AudioNodeView {
         this.panel.appendChild(this.canvasContainer);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
         this.update();
+
+        this.animationId = null;
     }
 
     update() {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
         let buffer = new Float32Array(this.canvas.width * 2);
         let canvas = this.canvas;
         let node = this.node;
         let canvasCtx = this.canvas.getContext('2d');
-        function draw() {
-            requestAnimationFrame(draw);
+        let draw = () => {
+            this.animationId = requestAnimationFrame(draw);
             node.getFloatTimeDomainData(buffer);
             canvasCtx.fillStyle = 'rgb(240, 240, 240)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -725,7 +731,7 @@ class WavesView extends AudioNodeView {
             }
             canvasCtx.stroke();
         };
-        draw();
+        this.animationId = requestAnimationFrame(draw);
     }
 
     setMaximized(value) {
@@ -1403,13 +1409,6 @@ if (isMobile) {
             selectedPanel = null;
         }
     });
-}
-
-window.onload = function () {
-    let lastNodes = window.localStorage.getItem('lastNodes');
-    if (lastNodes) {
-        load(JSON.parse(lastNodes));
-    }
 }
 
 window.onbeforeunload = function () {
