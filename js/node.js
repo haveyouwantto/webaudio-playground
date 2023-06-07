@@ -1,9 +1,9 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var isMobile = 'ontouchstart' in document.documentElement;
 let ctx = new AudioContext();
-ctx.audioWorklet.addModule('js/modules.js').then(() => {
+// ctx.audioWorklet.addModule('js/modules.js').then(() => {
 
-});
+// });
 
 let settings = {};
 let nodes = new Set();
@@ -112,7 +112,8 @@ class FullScreen {
     setPos(x, y, scale) {
         this.element.style.top = x + 'px';
         this.element.style.left = y + 'px';
-        this.element.style.transform = 'scale(' + scale + ', ' + scale + ')';
+        this.element.style.width = (scale * 100) + 'vw';
+        this.element.style.height = (scale * 100) + 'vh';
     }
 
     followScreen() {
@@ -673,7 +674,14 @@ class WavesView extends AudioNodeView {
         super();
         this.node = ctx.createAnalyser();
         this.canvas = document.createElement('canvas');
-        this.panel.appendChild(this.canvas);
+        this.canvasContainer = document.createElement('div');
+        this.canvas.addEventListener('mousedown', e => {
+            // alert(e.layerX / this.canvas.width * ctx.sampleRate / 2 + " Hz");
+            this.maximized = !this.maximized;
+            this.setMaximized(this.maximized);
+        });
+        this.canvasContainer.appendChild(this.canvas);
+        this.panel.appendChild(this.canvasContainer);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
         this.update();
     }
@@ -709,6 +717,18 @@ class WavesView extends AudioNodeView {
             canvasCtx.stroke();
         };
         draw();
+    }
+
+    setMaximized(value) {
+        if (value) {
+            fs.setFullscreen(this.canvas);
+            this.canvas.width = this.canvas.offsetWidth;
+            this.canvas.height = this.canvas.offsetHeight;
+        } else {
+            this.canvasContainer.appendChild(fs.exitFullscreen());
+            this.canvas.width = 300;
+            this.canvas.height = 150;
+        }
     }
 }
 
