@@ -81,6 +81,15 @@ function generateUUID() {
     });
 }
 
+function roundDownToPowerOfTwo(number) {
+    if (number <= 0) {
+        return 0;
+    }
+
+    let power = Math.floor(Math.log2(number));
+    return Math.pow(2, power);
+}
+
 class FullScreen {
     constructor() {
         this.element = document.getElementById('fullscreen');
@@ -1080,6 +1089,8 @@ class SpectrumViewV2 extends AudioNodeView {
         this.node2 = ctx.createAnalyser();
         this.node.smoothingTimeConstant = 0;
         this.node.connect(this.node2);
+        this.node.fftSize = roundDownToPowerOfTwo(ctx.sampleRate / 8);
+        this.node2.fftSize = roundDownToPowerOfTwo(ctx.sampleRate / 8);
 
         this.canvasContainer = document.createElement('div');
         this.canvas = document.createElement('canvas');
