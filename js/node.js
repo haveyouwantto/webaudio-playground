@@ -81,6 +81,48 @@ function generateUUID() {
     });
 }
 
+class FullScreen {
+    constructor() {
+        this.element = document.getElementById('fullscreen');
+        this.node = null;
+    }
+
+    setFullscreen(e) {
+        console.log(1);
+
+        this.element.style.display = 'block';
+        console.log(this.element);
+
+        console.log(2);
+
+        this.element.appendChild(e);
+        e.classList.add('maximized');
+
+        this.node = e;
+
+        if (isMobile) this.followScreen();
+    }
+
+    exitFullscreen() {
+        this.element.style.display = 'none';
+        this.node.classList.remove('maximized');
+        return this.node
+    }
+
+    setPos(x, y, scale) {
+        this.element.style.top = x + 'px';
+        this.element.style.left = y + 'px';
+        this.element.style.transform = 'scale(' + scale + ', ' + scale + ')';
+    }
+
+    followScreen() {
+        let pos = window.visualViewport;
+        fs.setPos(pos.offsetTop, pos.offsetLeft, pos.scale);
+    }
+}
+
+let fs = new FullScreen();
+
 class AudioNodeView {
     constructor(x = 8, y = 8, removeable = true) {
         this.x = x;
@@ -963,8 +1005,10 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
     initCanvas() {
+        this.canvasContainer = document.createElement('div');
         this.canvas = document.createElement('canvas');
-        this.panel.appendChild(this.canvas);
+        this.canvasContainer.appendChild(this.canvas);
+        this.panel.appendChild(this.canvasContainer);
 
         let div = document.createElement('div');
 
@@ -996,15 +1040,13 @@ class ConvolverNodeView extends AudioNodeView {
 
     setMaximized(value) {
         if (value) {
-            this.canvas.classList.add('maximized');
+            fs.setFullscreen(this.canvas);
             this.canvas.width = this.canvas.offsetWidth;
             this.canvas.height = this.canvas.offsetHeight;
-            this.panel.classList.add('ontop');
         } else {
-            this.canvas.classList.remove('maximized');
+            this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
             this.canvas.height = 150;
-            this.panel.classList.remove('ontop');
         }
         this.updateGraph();
     }
@@ -1019,9 +1061,11 @@ class SpectrumViewV2 extends AudioNodeView {
         this.node.smoothingTimeConstant = 0;
         this.node.connect(this.node2);
 
+        this.canvasContainer = document.createElement('div');
         this.canvas = document.createElement('canvas');
         this.canvas.height = 300;
-        this.panel.appendChild(this.canvas);
+        this.canvasContainer.appendChild(this.canvas);
+        this.panel.appendChild(this.canvasContainer);
         this.addNewSetting('Node', '', null, this.node, null, this.node2);
         this.maximized = false;
         this.animationId = 0;
@@ -1034,6 +1078,7 @@ class SpectrumViewV2 extends AudioNodeView {
     }
 
     update() {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
         let buffer = new Uint8Array(this.node.frequencyBinCount);
         let buffer2 = new Uint8Array(this.node2.frequencyBinCount);
 
@@ -1048,8 +1093,6 @@ class SpectrumViewV2 extends AudioNodeView {
 
         canvas2.width = canvas.width;
         canvas2.height = half;
-        console.log(canvas2);
-
 
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -1093,19 +1136,17 @@ class SpectrumViewV2 extends AudioNodeView {
         this.animationId = requestAnimationFrame(draw);
     }
 
+
     setMaximized(value) {
         if (value) {
-            this.canvas.classList.add('maximized');
+            fs.setFullscreen(this.canvas);
             this.canvas.width = this.canvas.offsetWidth;
             this.canvas.height = this.canvas.offsetHeight;
-            this.panel.classList.add('ontop');
         } else {
-            this.canvas.classList.remove('maximized');
+            this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
             this.canvas.height = 300;
-            this.panel.classList.remove('ontop');
         }
-        cancelAnimationFrame(this.animationId);
         this.update();
     }
 }
@@ -1344,5 +1385,9 @@ window.onbeforeunload = function () {
     window.localStorage.setItem('lastNodes', JSON.stringify(save()))
     return "Are you sure you want to leave this page? Changes you made may not be saved.";
 };
+
+if (isMobile) window.visualViewport.onscroll = e => {
+    fs.followScreen();
+}
 
 new AudioOutputNodeView();
