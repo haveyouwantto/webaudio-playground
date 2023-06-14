@@ -88,7 +88,7 @@ button:hover, input::file-selector-button:hover {
 }
 
 .menu-item:hover *{
-    background-color: unset;
+    /* background-color: unset; */
     color: black;
 }
 
