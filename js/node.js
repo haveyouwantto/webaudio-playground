@@ -548,6 +548,7 @@ class AudioSourceView extends AudioNodeView {
         let node = ctx.createMediaElementSource(aud);
 
         input.type = 'file';
+        input.accept = 'audio/*, video/*';
         input.addEventListener('change', e => {
             if (input.files[0]) {
                 let url = URL.createObjectURL(e.currentTarget.files[0]);
@@ -1017,6 +1018,7 @@ class ConvolverNodeView extends AudioNodeView {
         let node = ctx.createConvolver();
 
         input.type = 'file';
+        input.accept = 'audio/*, video/*';
         input.style.display = 'block';
         input.addEventListener('change', e => {
             if (input.files[0]) {
@@ -1191,8 +1193,8 @@ class SpectrumViewV2 extends AudioNodeView {
 class NewView extends AudioNodeView {
     constructor() {
         super();
-        this.node = new AudioWorkletNode(ctx, "binary-input");
-        this.addNewSetting('Node', '', null, null, null, this.node);
+        this.node = new AudioWorkletNode(ctx, "absolute-value");
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
     }
 }
 
@@ -1297,7 +1299,6 @@ function load(save_object) {
         for (const name in node.settings) {
             if (Object.hasOwnProperty.call(node.settings, name)) {
                 const saved_setting = save_object.settings[node.settings[name]];
-
                 const setting = view.getSetting(name);
 
                 try {
