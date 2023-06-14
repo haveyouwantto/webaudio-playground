@@ -18,6 +18,8 @@ let defaultLocale = {
     "view.FrequencyView": "Frequency Viewer",
     "view.SpectrumView": "Waterfall",
     "view.SpectrumViewV2": "Spectrum Display",
+    "view.ChannelSplitterNodeView": "Channel Splitter",
+    "view.ChannelMergerNodeView": "Channel Merger",
 
     "setting.Node": "Node",
     "setting.Value": "Value",
@@ -40,6 +42,14 @@ let defaultLocale = {
     "setting.Orientation Z": "Orientation Z",
     "setting.Pan": "Pan",
     "setting.Play Directly": "Play Directly",
+    "setting.Input": "Input",
+    "setting.Output": "Output",
+    "setting.L": "Left",
+    "setting.R": "Right",
+    "setting.SL": "Surround Left",
+    "setting.SR": "Surround Right",
+    "setting.C": "Center",
+    "setting.LFE": "Low Frequency",
 
     "operation.save":"Save",
     "operation.load":"Load",

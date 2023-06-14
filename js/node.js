@@ -1196,6 +1196,58 @@ class NewView extends AudioNodeView {
     }
 }
 
+class ChannelSplitterNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.node = ctx.createChannelSplitter();
+        this.c1 = ctx.createGain();
+        this.c2 = ctx.createGain();
+        this.c3 = ctx.createGain();
+        this.c4 = ctx.createGain();
+        this.c5 = ctx.createGain();
+        this.c6 = ctx.createGain();
+        this.node.connect(this.c1, 0);
+        this.node.connect(this.c2, 1);
+        this.node.connect(this.c3, 2);
+        this.node.connect(this.c4, 3);
+        this.node.connect(this.c5, 4);
+        this.node.connect(this.c6, 5);
+        this.addNewSetting('Input', '', null, this.node);
+        this.addNewSetting('L', '', null, null, null, this.c1);
+        this.addNewSetting('R', '', null, null, null, this.c2);
+        this.addNewSetting('C', '', null, null, null, this.c3);
+        this.addNewSetting('LFE', '', null, null, null, this.c4);
+        this.addNewSetting('SL', '', null, null, null, this.c5);
+        this.addNewSetting('SR', '', null, null, null, this.c6);
+    }
+}
+
+class ChannelMergerNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.node = ctx.createChannelMerger();
+        this.c1 = ctx.createGain();
+        this.c2 = ctx.createGain();
+        this.c3 = ctx.createGain();
+        this.c4 = ctx.createGain();
+        this.c5 = ctx.createGain();
+        this.c6 = ctx.createGain();
+        this.c1.connect(this.node, 0, 0);
+        this.c2.connect(this.node, 0, 1);
+        this.c3.connect(this.node, 0, 2);
+        this.c4.connect(this.node, 0, 3);
+        this.c5.connect(this.node, 0, 4);
+        this.c6.connect(this.node, 0, 5);
+        this.addNewSetting('L', '', null, this.c1);
+        this.addNewSetting('R', '', null, this.c2);
+        this.addNewSetting('C', '', null, this.c3);
+        this.addNewSetting('LFE', '', null, this.c4);
+        this.addNewSetting('SL', '', null, this.c5);
+        this.addNewSetting('SR', '', null, this.c6);
+        this.addNewSetting('Output', '', null, null, null, this.node);
+    }
+}
+
 function save() {
     let map = {
         "nodes": [],
@@ -1243,16 +1295,16 @@ function load(save_object) {
         view.moveTo(node.x, node.y);
 
         for (const name in node.settings) {
-            if (Object.hasOwnProperty.call(node.settings, name)) {
-                const saved_setting = save_object.settings[node.settings[name]];
+            try {
+                if (Object.hasOwnProperty.call(node.settings, name)) {
+                    const saved_setting = save_object.settings[node.settings[name]];
 
-                const setting = view.getSetting(name);
-                try {
+                    const setting = view.getSetting(name);
                     setting.edit(saved_setting.value);
-                } catch (error) {
-                    console.warn(error);
+                    ids[node.settings[name]] = setting;
                 }
-                ids[node.settings[name]] = setting;
+            } catch (error) {
+                console.warn(error);
             }
         }
     }
@@ -1302,6 +1354,10 @@ html.addEventListener('contextmenu', e => {
         { view: AudioSourceView },
         { view: AudioInputNodeView },
         { view: AudioRecorderView },
+
+        // Channel operators
+        { view: ChannelSplitterNodeView },
+        { view: ChannelMergerNodeView },
 
         // Visualizers
         { view: WavesView },

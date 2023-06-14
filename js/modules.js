@@ -39,21 +39,6 @@ class BinaryInputProcessor extends AudioWorkletProcessor {
     }
 }
 
-class AdditionProcessor extends AudioWorkletProcessor {
-    process(inputs, outputs, parameters) {
-        const output = outputs[0];
-        const input1 = inputs[0];
-        const input2 = inputs[0];
-        for (let i = 0; i < input.length; i++) {
-            let channel = input[i];
-            for (let j = 0; j < channel.length; j++) {
-                output[i][j] = input1[i][j] + input2[i][j];
-            }
-        }
-        return true;
-    }
-}
-
 registerProcessor('white-noise', WhiteNoiseProcessor);
 registerProcessor('absolute-value', AbsoluteValueProcessor);
 registerProcessor('binary-input', BinaryInputProcessor);
