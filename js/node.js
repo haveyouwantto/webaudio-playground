@@ -1295,16 +1295,17 @@ function load(save_object) {
         view.moveTo(node.x, node.y);
 
         for (const name in node.settings) {
-            try {
-                if (Object.hasOwnProperty.call(node.settings, name)) {
-                    const saved_setting = save_object.settings[node.settings[name]];
+            if (Object.hasOwnProperty.call(node.settings, name)) {
+                const saved_setting = save_object.settings[node.settings[name]];
 
-                    const setting = view.getSetting(name);
+                const setting = view.getSetting(name);
+
+                try {
                     setting.edit(saved_setting.value);
-                    ids[node.settings[name]] = setting;
+                } catch (error) {
+                    console.warn(error);
                 }
-            } catch (error) {
-                console.warn(error);
+                ids[node.settings[name]] = setting;
             }
         }
     }
@@ -1314,6 +1315,7 @@ function load(save_object) {
             const outputs = save_object.settings[id].outputs;
             for (const output of outputs) {
                 try {
+                    console.log("[" + id + "]", ids, ids[id]);
                     ids[id].connect(ids[output]);
                 } catch (error) {
                     console.warn(error);
@@ -1395,7 +1397,7 @@ html.addEventListener('contextmenu', e => {
 
     menuItems.forEach(category => {
         const categoryItem = document.createElement('div');
-        categoryItem.textContent = getLocale('category.'+category.category);
+        categoryItem.textContent = getLocale('category.' + category.category);
         categoryItem.classList.add('menu-item');
         menu.appendChild(categoryItem);
 
