@@ -1333,37 +1333,55 @@ html.addEventListener('contextmenu', e => {
     }
 
     const menuItems = [
-        // Generators
-        { view: ConstantSourceView },
-        { view: OscillatorNodeView },
-        { view: NoiseGeneratorView },
-
-        // Processors
-        { view: GainNodeView },
-        { view: DynamicsCompressorNodeView },
-        { view: DelayNodeView },
-        { view: BiquadFilterNodeView },
-        { view: ConvolverNodeView },
-        { view: AbsoluteValueView },
-
-        // Spatialization
-        { view: PannerNodeView },
-        { view: StereoPannerNodeView },
-
-        // Audio I/O
-        { view: AudioSourceView },
-        { view: AudioInputNodeView },
-        { view: AudioRecorderView },
-
-        // Channel operators
-        { view: ChannelSplitterNodeView },
-        { view: ChannelMergerNodeView },
-
-        // Visualizers
-        { view: WavesView },
-        { view: SpectrumViewV2 }
+        {
+            category: 'Generators',
+            items: [
+                { view: ConstantSourceView },
+                { view: OscillatorNodeView },
+                { view: NoiseGeneratorView }
+            ]
+        },
+        {
+            category: 'Processors',
+            items: [
+                { view: GainNodeView },
+                { view: DynamicsCompressorNodeView },
+                { view: DelayNodeView },
+                { view: BiquadFilterNodeView },
+                { view: ConvolverNodeView },
+                { view: AbsoluteValueView }
+            ]
+        },
+        {
+            category: 'Spatialization',
+            items: [
+                { view: PannerNodeView },
+                { view: StereoPannerNodeView }
+            ]
+        },
+        {
+            category: 'AudioIO',
+            items: [
+                { view: AudioSourceView },
+                { view: AudioInputNodeView },
+                { view: AudioRecorderView }
+            ]
+        },
+        {
+            category: 'ChannelOperators',
+            items: [
+                { view: ChannelSplitterNodeView },
+                { view: ChannelMergerNodeView }
+            ]
+        },
+        {
+            category: 'Visualizers',
+            items: [
+                { view: WavesView },
+                { view: SpectrumViewV2 }
+            ]
+        }
     ];
-
 
     const mouseX = e.clientX + window.scrollX; // X-coordinate of the mouse
     const mouseY = e.clientY + window.scrollY; // Y-coordinate of the mouse
@@ -1375,18 +1393,47 @@ html.addEventListener('contextmenu', e => {
     menu.style.paddingBottom = '5px';
     menu.style.zIndex = `999`;
 
-    menuItems.forEach(item => {
-        const menuItem = document.createElement('div');
-        menuItem.textContent = getLocale('view.' + item.view.name);
-        menuItem.classList.add('menu-item')
-        menuItem.addEventListener('click', () => {
-            let view = new item.view(); // Create a new instance of the corresponding view
+    menuItems.forEach(category => {
+        const categoryItem = document.createElement('div');
+        categoryItem.textContent = getLocale('category.'+category.category);
+        categoryItem.classList.add('menu-item');
+        menu.appendChild(categoryItem);
 
-            view.moveTo(mouseX, mouseY);
-            menu.remove(); // Remove the menu after selecting an item
+        const submenu = document.createElement('div');
+        submenu.classList.add('panel');
+        submenu.style.display = 'none';
+        submenu.style.left = '90%';
+        submenu.classList.add('submenu');
+        categoryItem.appendChild(submenu);
+
+        category.items.forEach(item => {
+            const menuItem = document.createElement('div');
+            menuItem.textContent = getLocale('view.' + item.view.name);
+            menuItem.classList.add('menu-item');
+            submenu.appendChild(menuItem);
+
+            menuItem.addEventListener('click', () => {
+                let view = new item.view(); // Create a new instance of the corresponding view
+                view.moveTo(mouseX, mouseY);
+                menu.remove(); // Remove the menu after selecting an item
+            });
         });
-        menu.appendChild(menuItem);
+
+        // Toggle submenu visibility on mouse hover
+        categoryItem.addEventListener(isMobile ? 'click' : 'mouseover', e => {
+            submenu.style.display = 'block';
+            submenu.style.top = categoryItem.offsetTop + 'px';
+            categoryItem.classList.add('expanded');
+            e.stopPropagation()
+        });
+
+        categoryItem.addEventListener('mouseleave', () => {
+            submenu.style.display = 'none';
+            categoryItem.classList.remove('expanded');
+        });
     });
+
+
 
 
     const saveButton = document.createElement('div');

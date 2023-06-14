@@ -11,7 +11,7 @@ let defaultLocale = {
     "view.PannerNodeView": "Panner",
     "view.StereoPannerNodeView": "Stereo Panner",
     "view.AudioSourceView": "Audio File",
-    "view.AudioInputNodeView": "Audio Input",
+    "view.AudioInputNodeView": "Microphone",
     "view.AudioRecorderView": "Audio Recorder",
     "view.AudioOutputNodeView": "Audio Output",
     "view.WavesView": "Waves Viewer",
@@ -20,6 +20,13 @@ let defaultLocale = {
     "view.SpectrumViewV2": "Spectrum Display",
     "view.ChannelSplitterNodeView": "Channel Splitter",
     "view.ChannelMergerNodeView": "Channel Merger",
+
+    "category.Generators":"Generators",
+    "category.Processors":"Processors",
+    "category.Spatialization":"Spatialization",
+    "category.AudioIO":"Audio I/O",
+    "category.ChannelOperators":"Channel Operators",
+    "category.Visualizers":"Visualizers",
 
     "setting.Node": "Node",
     "setting.Value": "Value",

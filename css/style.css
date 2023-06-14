@@ -87,6 +87,11 @@ button:hover, input::file-selector-button:hover {
     color: white;
 }
 
+.menu-item:hover *{
+    background-color: unset;
+    color: black;
+}
+
 .input, .output{
     border-radius: 100%;
     width: 15px;

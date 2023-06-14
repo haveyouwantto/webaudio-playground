@@ -11,7 +11,7 @@
     "view.PannerNodeView": "定位器",
     "view.StereoPannerNodeView": "立体声定位器",
     "view.AudioSourceView": "音频文件",
-    "view.AudioInputNodeView": "音频输入",
+    "view.AudioInputNodeView": "麦克风",
     "view.AudioRecorderView": "音频录制器",
     "view.AudioOutputNodeView": "音频输出",
     "view.WavesView": "波形显示",
@@ -20,6 +20,13 @@
     "view.SpectrumViewV2": "频谱显示",
     "view.ChannelSplitterNodeView": "声道分离器",
     "view.ChannelMergerNodeView": "声道合并器",
+
+    "category.Generators": "生成器",
+    "category.Processors": "处理器",
+    "category.Spatialization": "空间化",
+    "category.AudioIO": "音频输入/输出",
+    "category.ChannelOperators": "通道操作",
+    "category.Visualizers": "可视化工具",
 
     "setting.Node": "节点",
     "setting.Value": "数值",
