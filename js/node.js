@@ -1313,7 +1313,7 @@ class BitcrusherNodeView extends AudioNodeView {
 class ConditionalNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.node = new AudioWorkletNode(ctx, "conditional-processor", { numberOfInputs: 3 });
+        this.node = new AudioWorkletNode(ctx, "conditional-processor", { numberOfInputs: 3,outputChannelCount:[2] });
         this.c1 = ctx.createGain();
         this.c2 = ctx.createGain();
         this.c3 = ctx.createGain();

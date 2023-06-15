@@ -82,7 +82,6 @@ class ConditionalProcessor extends AudioWorkletProcessor {
         ];
     }
 
-
     process(inputs, outputs, parameters) {
         const output = outputs[0];
         const input = inputs[0];
@@ -98,9 +97,8 @@ class ConditionalProcessor extends AudioWorkletProcessor {
             for (let j = 0; j < channelInput.length; j++) {
                 const threshold = parameters.threshold[j] || parameters.threshold[0];
                 const sample = channelInput[j];
-                const sampleGreater = channelInputGreater ? channelInputGreater[j] : 0; // Handle null input
-                const sampleLesser = channelInputLesser ? channelInputLesser[j] : 0; // Handle null input
-
+                const sampleGreater = channelInputGreater ? channelInputGreater[j] : inputGreater[0] ? inputGreater[0][j] : 0; // Handle null input
+                const sampleLesser = channelInputLesser ? channelInputLesser[j] : inputLesser[0] ? inputLesser[0][j] : 0; // Handle null input
                 channelOutput && (channelOutput[j] = sample > threshold ? sampleGreater : sampleLesser);
             }
         }
