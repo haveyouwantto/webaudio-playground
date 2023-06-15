@@ -1,12 +1,15 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-var isMobile = 'ontouchstart' in document.documentElement;
+const isMobile = 'ontouchstart' in document.documentElement;
+const dpr = window.devicePixelRatio;
 let ctx = new AudioContext();
-ctx.audioWorklet.addModule('js/modules.js').then(() => {
-    let lastNodes = window.localStorage.getItem('lastNodes');
-    if (lastNodes) {
-        load(JSON.parse(lastNodes));
-    }
-});
+
+if (ctx.audioWorklet)
+    ctx.audioWorklet.addModule('js/modules.js').then(() => {
+        let lastNodes = window.localStorage.getItem('lastNodes');
+        if (lastNodes) {
+            load(JSON.parse(lastNodes));
+        }
+    });
 
 let settings = {};
 let nodes = new Set();
@@ -738,8 +741,8 @@ class WavesView extends AudioNodeView {
     setMaximized(value) {
         if (value) {
             fs.setFullscreen(this.canvas);
-            this.canvas.width = this.canvas.offsetWidth;
-            this.canvas.height = this.canvas.offsetHeight;
+            this.canvas.width = window.visualViewport.width * window.visualViewport.scale * dpr;
+            this.canvas.height = window.visualViewport.height* window.visualViewport.scale * dpr;
         } else {
             this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
@@ -1078,8 +1081,8 @@ class ConvolverNodeView extends AudioNodeView {
     setMaximized(value) {
         if (value) {
             fs.setFullscreen(this.canvas);
-            this.canvas.width = this.canvas.offsetWidth;
-            this.canvas.height = this.canvas.offsetHeight;
+            this.canvas.width = window.visualViewport.width * window.visualViewport.scale * dpr;
+            this.canvas.height = window.visualViewport.height* window.visualViewport.scale * dpr;
         } else {
             this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
@@ -1179,8 +1182,8 @@ class SpectrumViewV2 extends AudioNodeView {
     setMaximized(value) {
         if (value) {
             fs.setFullscreen(this.canvas);
-            this.canvas.width = this.canvas.offsetWidth;
-            this.canvas.height = this.canvas.offsetHeight;
+            this.canvas.width = window.visualViewport.width * window.visualViewport.scale * dpr;
+            this.canvas.height = window.visualViewport.height* window.visualViewport.scale * dpr;
         } else {
             this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
