@@ -1300,6 +1300,36 @@ class ControlsView extends AudioNodeView {
     }
 }
 
+class BitcrusherNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.node = new AudioWorkletNode(ctx, "bitcrusher-processor");
+        let bits = this.node.parameters.get("bitDepth");
+        this.addNewSetting('BitDepth', 'num', 8, bits, bits)
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
+class ConditionalNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.node = new AudioWorkletNode(ctx, "conditional-processor",{numberOfInputs:3});
+        this.c1 = ctx.createGain();
+        this.c2 = ctx.createGain();
+        this.c3 = ctx.createGain();
+        this.c1.connect(this.node, 0, 0);
+        this.c2.connect(this.node, 0, 1);
+        this.c3.connect(this.node, 0, 2);
+        let threshold = this.node.parameters.get("threshold");
+        this.addNewSetting('Input', '', null, this.c1);
+        this.addNewSetting('Threshold', 'num', 0.5, threshold);
+        this.addNewSetting('IfGreater', '', null, this.c2);
+        this.addNewSetting('IfLesser', '', null, this.c3);
+        this.addNewSetting('Output', '', null, null, null, this.node);
+    }
+}
+
+// Saving
 function save() {
     let map = {
         "nodes": [],

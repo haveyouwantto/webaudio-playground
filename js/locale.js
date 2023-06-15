@@ -22,6 +22,8 @@ let defaultLocale = {
     "view.ChannelMergerNodeView": "Channel Merger",
     "view.WelcomeView": "Welcome",
     "view.ControlsView": "Controls",
+    "view.BitcrusherNodeView":"Bit Crusher",
+    "view.ConditionalNodeView": "Conditional Routing",
 
     "category.Generators": "Generators",
     "category.Processors": "Processors",
@@ -59,6 +61,10 @@ let defaultLocale = {
     "setting.SR": "Surround Right",
     "setting.C": "Center",
     "setting.LFE": "Low Frequency",
+    "setting.BitDepth":"Bit Depth",
+    "setting.Threshold":"Threshold",
+    "setting.IfGreater":"If Greater",
+    "setting.IfLesser":"If Lesser",
 
     "operation.save": "Save",
     "operation.load": "Load",
