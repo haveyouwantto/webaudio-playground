@@ -88,25 +88,25 @@ class ConditionalProcessor extends AudioWorkletProcessor {
         const input = inputs[0];
         const inputGreater = inputs[1];
         const inputLesser = inputs[2];
-      
+
         for (let i = 0; i < input.length; i++) {
-          const channelInput = input[i];
-          const channelInputGreater = inputGreater[i];
-          const channelInputLesser = inputLesser[i];
-          const channelOutput = output[i];
-      
-          for (let j = 0; j < channelInput.length; j++) {
-            const threshold = parameters.threshold[j];
-            const sample = channelInput[j];
-            const sampleGreater = channelInputGreater ? channelInputGreater[j] : 0; // Handle null input
-            const sampleLesser = channelInputLesser ? channelInputLesser[j] : 0; // Handle null input
-      
-            channelOutput && (channelOutput[j] = sample && sample > threshold ? sampleGreater : sampleLesser); // Output zero if sample is null
-          }
+            const channelInput = input[i];
+            const channelInputGreater = inputGreater[i];
+            const channelInputLesser = inputLesser[i];
+            const channelOutput = output[i];
+
+            for (let j = 0; j < channelInput.length; j++) {
+                const threshold = parameters.threshold[j] || parameters.threshold[0];
+                const sample = channelInput[j];
+                const sampleGreater = channelInputGreater ? channelInputGreater[j] : 0; // Handle null input
+                const sampleLesser = channelInputLesser ? channelInputLesser[j] : 0; // Handle null input
+
+                channelOutput && (channelOutput[j] = sample > threshold ? sampleGreater : sampleLesser);
+            }
         }
-      
+
         return true;
-      }
+    }
 }
 
 

@@ -216,7 +216,6 @@ class AudioNodeView {
             for (const setting in this.settings) {
                 const element = this.settings[setting];
                 element.updateLines();
-                console.log(element);
             }
         });
         const config = { attributes: true, childList: true, subtree: true };
