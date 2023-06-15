@@ -135,12 +135,7 @@ class FullScreen {
     }
 
     setFullscreen(e) {
-        console.log(1);
-
         this.element.style.display = 'block';
-        console.log(this.element);
-
-        console.log(2);
 
         this.element.appendChild(e);
         e.classList.add('maximized');
@@ -216,6 +211,16 @@ class AudioNodeView {
         nodes.add(this)
 
         this.settings = {};
+
+        const observer = new MutationObserver(() => {
+            for (const setting in this.settings) {
+                const element = this.settings[setting];
+                element.updateLines();
+                console.log(element);
+            }
+        });
+        const config = { attributes: true, childList: true, subtree: true };
+        observer.observe(this.panel, config);
     }
 
     moveTo(x, y) {
@@ -223,10 +228,6 @@ class AudioNodeView {
         this.y = y;
         this.panel.style.left = x + 'px';
         this.panel.style.top = y + 'px';
-        for (const setting in this.settings) {
-            const element = this.settings[setting];
-            element.updateLines();
-        }
     }
 
     remove() {
@@ -1432,7 +1433,7 @@ html.addEventListener('contextmenu', e => {
                 { view: DelayNodeView },
                 { view: BiquadFilterNodeView },
                 { view: ConvolverNodeView },
-                { view: AbsoluteValueView }, 
+                { view: AbsoluteValueView },
                 { view: BitcrusherNodeView },
                 { view: ConditionalNodeView },
             ]
