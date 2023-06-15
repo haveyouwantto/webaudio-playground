@@ -140,7 +140,7 @@ class FullScreen {
 let fs = new FullScreen();
 
 class AudioNodeView {
-    constructor(x = 8, y = 8, removeable = true) {
+    constructor(x = 16, y = 16, removeable = true) {
         this.x = x;
         this.y = y;
         this.panel = document.createElement('div');
@@ -1544,4 +1544,33 @@ if (isMobile) window.visualViewport.onscroll = e => {
     fs.followScreen();
 }
 
-new AudioOutputNodeView();
+load({
+    "nodes": [
+        {
+            "type": "AudioOutputNodeView",
+            "x": 16,
+            "y": 16,
+            "settings": {
+                "Node": "6dde43e7-3393-4fdf-ad39-dcba676e4825"
+            }
+        },
+        {
+            "type": "WelcomeView",
+            "x": 16,
+            "y": 200,
+            "settings": {}
+        },
+        {
+            "type": "ControlsView",
+            "x": 540,
+            "y": 200,
+            "settings": {}
+        }
+    ],
+    "settings": {
+        "6dde43e7-3393-4fdf-ad39-dcba676e4825": {
+            "type": "",
+            "outputs": []
+        }
+    }
+});
