@@ -279,8 +279,6 @@ class Setting {
                         selectedOutput.connect(this);
                         selectedOutput.outputTag.classList.remove('selected');
                         selectedOutput = null;
-                    } else {
-                        this.disconnectIn();
                     }
                 });
             }
@@ -742,7 +740,7 @@ class WavesView extends AudioNodeView {
         if (value) {
             fs.setFullscreen(this.canvas);
             this.canvas.width = window.visualViewport.width * window.visualViewport.scale * dpr;
-            this.canvas.height = window.visualViewport.height* window.visualViewport.scale * dpr;
+            this.canvas.height = window.visualViewport.height * window.visualViewport.scale * dpr;
         } else {
             this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
@@ -1082,7 +1080,7 @@ class ConvolverNodeView extends AudioNodeView {
         if (value) {
             fs.setFullscreen(this.canvas);
             this.canvas.width = window.visualViewport.width * window.visualViewport.scale * dpr;
-            this.canvas.height = window.visualViewport.height* window.visualViewport.scale * dpr;
+            this.canvas.height = window.visualViewport.height * window.visualViewport.scale * dpr;
         } else {
             this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
@@ -1183,7 +1181,7 @@ class SpectrumViewV2 extends AudioNodeView {
         if (value) {
             fs.setFullscreen(this.canvas);
             this.canvas.width = window.visualViewport.width * window.visualViewport.scale * dpr;
-            this.canvas.height = window.visualViewport.height* window.visualViewport.scale * dpr;
+            this.canvas.height = window.visualViewport.height * window.visualViewport.scale * dpr;
         } else {
             this.canvasContainer.appendChild(fs.exitFullscreen());
             this.canvas.width = 300;
@@ -1250,6 +1248,23 @@ class ChannelMergerNodeView extends AudioNodeView {
         this.addNewSetting('SL', '', null, this.c5);
         this.addNewSetting('SR', '', null, this.c6);
         this.addNewSetting('Output', '', null, null, null, this.node);
+    }
+}
+
+class WelcomeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.panel.appendChild(createLocaleHTMLItem("text.welcome"));
+        this.panel.style.minWidth = 'unset';
+        this.panel.style.width = '500px';
+    }
+}
+class ControlsView extends AudioNodeView {
+    constructor() {
+        super();
+        this.panel.appendChild(createLocaleHTMLItem(isMobile ? "text.controls-touch" : "text.controls"));
+        this.panel.style.minWidth = 'unset';
+        this.panel.style.width = '500px';
     }
 }
 

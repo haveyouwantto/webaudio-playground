@@ -20,13 +20,15 @@ let defaultLocale = {
     "view.SpectrumViewV2": "Spectrum Display",
     "view.ChannelSplitterNodeView": "Channel Splitter",
     "view.ChannelMergerNodeView": "Channel Merger",
+    "view.WelcomeView": "Welcome",
+    "view.ControlsView": "Controls",
 
-    "category.Generators":"Generators",
-    "category.Processors":"Processors",
-    "category.Spatialization":"Spatialization",
-    "category.AudioIO":"Audio I/O",
-    "category.ChannelOperators":"Channel Operators",
-    "category.Visualizers":"Visualizers",
+    "category.Generators": "Generators",
+    "category.Processors": "Processors",
+    "category.Spatialization": "Spatialization",
+    "category.AudioIO": "Audio I/O",
+    "category.ChannelOperators": "Channel Operators",
+    "category.Visualizers": "Visualizers",
 
     "setting.Node": "Node",
     "setting.Value": "Value",
@@ -58,14 +60,40 @@ let defaultLocale = {
     "setting.C": "Center",
     "setting.LFE": "Low Frequency",
 
-    "operation.save":"Save",
-    "operation.load":"Load",
-    "operation.clear-all":"Clear All",
+    "operation.save": "Save",
+    "operation.load": "Load",
+    "operation.clear-all": "Clear All",
 
-    "control.impulse":"Impulse",
-    "control.frequency":"Frequency",
-    "control.record":"Record",
-    "control.record-stop": "Stop Recording"
+    "control.impulse": "Impulse",
+    "control.frequency": "Frequency",
+    "control.record": "Record",
+    "control.record-stop": "Stop Recording",
+
+    "text.welcome": `
+    <p>This is an browser audio playground where you can experiment and explore with Web Audio API. The Web Audio API allows you to create, manipulate, and process audio in real-time using JavaScript.</p>
+    <p>To get started, you can create your own audio flowchart using the context menu. You can create audio nodes, connect them together, apply effects, and more. The audio flowchart will execute in real-time.</p>
+    <p>If you're new to the Web Audio API, don't worry! We have some resources to help you get started:</p>
+    <ul>
+      <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank">Web Audio API Documentation</a>: Official documentation provided by Mozilla Developer Network (MDN) that explains and provides examples on how to use the Web Audio API.</li>
+      <li><a href="https://www.html5rocks.com/en/tutorials/webaudio/intro/" target="_blank">Web Audio API Tutorial</a>: A beginner-friendly tutorial on HTML5 Rocks that introduces the Web Audio API, covering the basics and providing code examples.</li>
+    </ul>
+    <p>Feel free to explore and enjoy the fun of audio coding!</p>
+  `,
+    "text.controls": `
+  <ul>
+      <li>To add a node, right-click anywhere on the workspace and select the desired node type from the context menu.</li>
+      <li>To connect nodes, drag the red output circle of one node to the blue input circle of another node.</li>
+      <li>To disconnect nodes, double-click on an existing connection.</li>
+      <li>To delete a panel and its nodes, double-click on the title bar of the panel you wish to delete.</li>
+      <li>To move a panel, click and drag its title bar to a new position on the workspace.</li>
+    </ul>`,
+    "text.controls-touch": `<ul>
+    <li>To add a node, long-press anywhere on the workspace to open the context menu, then select the desired node type.</li>
+    <li>To connect nodes, tap the output circle of one node to activate an outline, then tap the input circle of another node to connect them.</li>
+    <li>To disconnect nodes, double-tap on an existing connection.</li>
+    <li>To delete a panel and its nodes, double-tap on the title bar of the panel you wish to delete.</li>
+    <li>To move a panel, tap the arrow icon on the right side of the panel's title bar to activate an outline. Then, tap on a new position to set the panel's position on the workspace.</li>
+  </ul>`
 };
 
 let currentLocale = {};
@@ -130,9 +158,19 @@ function createLocaleItem(key) {
     return locale;
 }
 
+function createLocaleHTMLItem(key) {
+    let locale = document.createElement('locale-html');
+    locale.setAttribute('key', key);
+    locale.innerHTML = getLocale(key);
+    return locale;
+}
+
 function updateHTML() {
     document.querySelectorAll("locale").forEach(element => {
         element.innerText = getLocale(element.getAttribute('key'));
+    });
+    document.querySelectorAll("locale-html").forEach(element => {
+        element.innerHTML = getLocale(element.getAttribute('key'));
     });
 }
 
