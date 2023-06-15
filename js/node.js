@@ -1313,7 +1313,7 @@ class BitcrusherNodeView extends AudioNodeView {
 class ConditionalNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.node = new AudioWorkletNode(ctx, "conditional-processor",{numberOfInputs:3});
+        this.node = new AudioWorkletNode(ctx, "conditional-processor", { numberOfInputs: 3 });
         this.c1 = ctx.createGain();
         this.c2 = ctx.createGain();
         this.c3 = ctx.createGain();
@@ -1432,7 +1432,9 @@ html.addEventListener('contextmenu', e => {
                 { view: DelayNodeView },
                 { view: BiquadFilterNodeView },
                 { view: ConvolverNodeView },
-                { view: AbsoluteValueView }
+                { view: AbsoluteValueView }, 
+                { view: BitcrusherNodeView },
+                { view: ConditionalNodeView },
             ]
         },
         {
@@ -1462,6 +1464,13 @@ html.addEventListener('contextmenu', e => {
             items: [
                 { view: WavesView },
                 { view: SpectrumViewV2 }
+            ]
+        },
+        {
+            category: 'Help',
+            items: [
+                { view: WelcomeView },
+                { view: ControlsView }
             ]
         }
     ];

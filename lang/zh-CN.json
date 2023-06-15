@@ -31,6 +31,7 @@
     "category.AudioIO": "音频输入/输出",
     "category.ChannelOperators": "通道操作",
     "category.Visualizers": "可视化工具",
+    "category.Help": "帮助",
 
     "setting.Node": "节点",
     "setting.Value": "数值",

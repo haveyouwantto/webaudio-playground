@@ -31,6 +31,7 @@ let defaultLocale = {
     "category.AudioIO": "Audio I/O",
     "category.ChannelOperators": "Channel Operators",
     "category.Visualizers": "Visualizers",
+    "category.Help": "Help",
 
     "setting.Node": "Node",
     "setting.Value": "Value",
