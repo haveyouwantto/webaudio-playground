@@ -8,6 +8,38 @@ if (ctx.audioWorklet)
         let lastNodes = window.localStorage.getItem('lastNodes');
         if (lastNodes) {
             load(JSON.parse(lastNodes));
+        } else {
+            // Load welcome info
+            load({
+                "nodes": [
+                    {
+                        "type": "AudioOutputNodeView",
+                        "x": 16,
+                        "y": 16,
+                        "settings": {
+                            "Node": "6dde43e7-3393-4fdf-ad39-dcba676e4825"
+                        }
+                    },
+                    {
+                        "type": "WelcomeView",
+                        "x": 16,
+                        "y": 200,
+                        "settings": {}
+                    },
+                    {
+                        "type": "ControlsView",
+                        "x": 540,
+                        "y": 200,
+                        "settings": {}
+                    }
+                ],
+                "settings": {
+                    "6dde43e7-3393-4fdf-ad39-dcba676e4825": {
+                        "type": "",
+                        "outputs": []
+                    }
+                }
+            });
         }
     });
 
@@ -481,7 +513,7 @@ class Setting {
 
 class AudioOutputNodeView extends AudioNodeView {
     constructor() {
-        super(8, 8, false);
+        super(16, 16, false);
         // this.setTitle('Audio Output');
         this.addNewSetting('Node', '', null, ctx.destination);
     }
@@ -1543,34 +1575,3 @@ window.onbeforeunload = function () {
 if (isMobile) window.visualViewport.onscroll = e => {
     fs.followScreen();
 }
-
-load({
-    "nodes": [
-        {
-            "type": "AudioOutputNodeView",
-            "x": 16,
-            "y": 16,
-            "settings": {
-                "Node": "6dde43e7-3393-4fdf-ad39-dcba676e4825"
-            }
-        },
-        {
-            "type": "WelcomeView",
-            "x": 16,
-            "y": 200,
-            "settings": {}
-        },
-        {
-            "type": "ControlsView",
-            "x": 540,
-            "y": 200,
-            "settings": {}
-        }
-    ],
-    "settings": {
-        "6dde43e7-3393-4fdf-ad39-dcba676e4825": {
-            "type": "",
-            "outputs": []
-        }
-    }
-});
