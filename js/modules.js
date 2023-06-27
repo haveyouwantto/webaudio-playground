@@ -108,9 +108,6 @@ class ConditionalProcessor extends AudioWorkletProcessor {
 }
 
 
-
-
-
 registerProcessor('white-noise', WhiteNoiseProcessor);
 registerProcessor('absolute-value', AbsoluteValueProcessor);
 registerProcessor('bitcrusher-processor', BitcrusherProcessor);

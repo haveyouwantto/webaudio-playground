@@ -76,6 +76,7 @@ let defaultLocale = {
     "control.record": "Record",
     "control.record-stop": "Stop Recording",
 
+    "text.start":"Start",
     "text.welcome": `
     <p>This is an browser audio playground where you can experiment and explore with Web Audio API. The Web Audio API allows you to create, manipulate, and process audio in real-time using JavaScript.</p>
     <p>To get started, you can create your own audio flowchart using the context menu. You can create audio nodes, connect them together, apply effects, and more. The audio flowchart will execute in real-time.</p>

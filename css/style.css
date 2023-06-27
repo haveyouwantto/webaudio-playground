@@ -158,3 +158,19 @@ audio {
     z-index: 99;
     display: none;
 }
+
+#play {
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000080;
+    position: fixed;
+    z-index: 10;
+    display: flex;
+    cursor: pointer;
+}
+
+#startText{
+    margin: auto;
+    color: white;
+    font-size: 10vw;
+}

@@ -5,42 +5,54 @@ let ctx = new AudioContext();
 
 if (ctx.audioWorklet)
     ctx.audioWorklet.addModule('js/modules.js').then(() => {
-        let lastNodes = window.localStorage.getItem('lastNodes');
-        if (lastNodes) {
-            load(JSON.parse(lastNodes));
-        } else {
-            // Load welcome info
-            load({
-                "nodes": [
-                    {
-                        "type": "AudioOutputNodeView",
-                        "x": 16,
-                        "y": 16,
-                        "settings": {
-                            "Node": "6dde43e7-3393-4fdf-ad39-dcba676e4825"
+        let startCtxDiv = document.getElementById('play');
+        startCtxDiv.addEventListener('click', e => {
+            ctx.resume();
+            startCtxDiv.style.display = 'none';
+
+            let lastNodes = window.localStorage.getItem('lastNodes');
+            if (lastNodes) {
+                load(JSON.parse(lastNodes));
+            } else {
+                // Load welcome info
+                load({
+                    "nodes": [
+                        {
+                            "type": "AudioOutputNodeView",
+                            "x": 16,
+                            "y": 16,
+                            "settings": {
+                                "Node": "6dde43e7-3393-4fdf-ad39-dcba676e4825"
+                            }
+                        },
+                        {
+                            "type": "WelcomeView",
+                            "x": 16,
+                            "y": 200,
+                            "settings": {}
+                        },
+                        {
+                            "type": "ControlsView",
+                            "x": 540,
+                            "y": 200,
+                            "settings": {}
                         }
-                    },
-                    {
-                        "type": "WelcomeView",
-                        "x": 16,
-                        "y": 200,
-                        "settings": {}
-                    },
-                    {
-                        "type": "ControlsView",
-                        "x": 540,
-                        "y": 200,
-                        "settings": {}
+                    ],
+                    "settings": {
+                        "6dde43e7-3393-4fdf-ad39-dcba676e4825": {
+                            "type": "",
+                            "outputs": []
+                        }
                     }
-                ],
-                "settings": {
-                    "6dde43e7-3393-4fdf-ad39-dcba676e4825": {
-                        "type": "",
-                        "outputs": []
-                    }
-                }
-            });
-        }
+                });
+            }
+
+
+            window.onbeforeunload = function () {
+                window.localStorage.setItem('lastNodes', JSON.stringify(save()))
+                return "Are you sure you want to leave this page? Changes you made may not be saved.";
+            };
+        });
     });
 
 let settings = {};
@@ -1605,11 +1617,6 @@ if (isMobile) {
         }
     });
 }
-
-window.onbeforeunload = function () {
-    window.localStorage.setItem('lastNodes', JSON.stringify(save()))
-    return "Are you sure you want to leave this page? Changes you made may not be saved.";
-};
 
 if (isMobile) window.visualViewport.onscroll = e => {
     fs.followScreen();

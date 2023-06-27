@@ -76,6 +76,7 @@
     "control.record": "录制",
     "control.record-stop": "停止录制",
 
+    "text.start":"开始",
     "text.welcome": "<p>这是一个浏览器音频实验室，您可以使用 Web Audio API 进行实验和探索。Web Audio API 允许您使用 JavaScript 实时创建、操作和处理音频。</p><p>要开始，请使用上下文菜单创建您自己的音频流程图。您可以创建音频节点，将它们连接在一起，应用效果等等。音频流程图将实时执行。</p><p>如果您对 Web Audio API 还不熟悉，不用担心！我们有一些资源可以帮助您入门：</p><ul><li><a href=\"https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Audio_API\" target=\"_blank\">Web Audio API 文档</a>：Mozilla Developer Network（MDN）提供的官方文档，介绍了如何使用 Web Audio API，并提供示例。</li><li><a href=\"https://www.html5rocks.com/zh/tutorials/webaudio/intro/\" target=\"_blank\">Web Audio API 教程</a>：HTML5 Rocks 上的入门教程，介绍了 Web Audio API 的基础知识，并提供了代码示例。</li></ul><p>请尽情探索和享受音频编码的乐趣！",
     "text.controls": "<ul><li>要添加节点，请右键单击工作区的任意位置，并从上下文菜单中选择所需的节点类型。</li><li>要连接节点，请将一个节点的红色输出圆圈拖动到另一个节点的蓝色输入圆圈上。</li><li>要断开节点连接，请双击现有的连接。</li><li>要删除面板及其节点，请双击要删除的面板的标题栏。</li><li>要移动面板，请单击并拖动其标题栏到工作区上的新位置。</li></ul>",
     "text.controls-touch": "<ul><li>要添加节点，请在工作区的任意位置长按以打开上下文菜单，然后选择所需的节点类型。</li><li>要连接节点，请轻触一个节点的输出圆圈以激活轮廓，然后轻触另一个节点的输入圆圈以连接它们。</li><li>要断开节点连接，请双击现有的连接。</li><li>要删除面板及其节点，请双击要删除的面板的标题栏。</li><li>要移动面板，请轻触面板标题栏右侧的箭头图标以激活轮廓。然后，轻触一个新位置来设置面板在工作区上的位置。</li></ul>"
