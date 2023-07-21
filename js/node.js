@@ -559,6 +559,7 @@ class DynamicsCompressorNodeView extends AudioNodeView {
         this.addNewSetting('Release', 'num', this.node.release.value, this.node.release);
         this.addNewSetting('Knee', 'num', this.node.knee.value, this.node.knee);
         this.addNewSetting('Ratio', 'num', this.node.ratio.value, this.node.ratio);
+        this.addNewSetting('Threshold', 'num', this.node.threshold.value, this.node.threshold);
         this.addNewSetting('Node', '', null, this.node, null, this.node);
     }
 }
