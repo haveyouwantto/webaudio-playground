@@ -334,7 +334,7 @@ class Setting {
             this.div.appendChild(inputTag);
             inputTag.addEventListener('drop', e => {
                 let node = settings[e.dataTransfer.getData('node')];
-                node.connect(this);
+                if(node instanceof Setting) node.connect(this);
             });
             inputTag.addEventListener('dragover', e => {
                 e.preventDefault();
@@ -344,7 +344,7 @@ class Setting {
             });
             if (isMobile) {
                 inputTag.addEventListener('click', e => {
-                    if (selectedOutput) {
+                    if (selectedOutput && selectedOutput instanceof Setting) {
                         selectedOutput.connect(this);
                         selectedOutput.outputTag.classList.remove('selected');
                         selectedOutput = null;
@@ -453,26 +453,26 @@ class Setting {
     }
 
     connect(node) {
-        if (!this.outputs.includes(node)) {
-            this.outputs.push(node);
-            node.inputs.push(this);
-            this.output.connect(node.input);
+            if (!this.outputs.includes(node)) {
+                this.outputs.push(node);
+                node.inputs.push(this);
+                this.output.connect(node.input);
 
-            let pos1 = this.outputTag.getBoundingClientRect();
-            let pos2 = node.inputTag.getBoundingClientRect();
-            this.outputLines[node.id] = drawLine(
-                pos1.x + pos1.width / 2 + window.scrollX,
-                pos1.y + pos1.height / 2 + window.scrollY,
-                pos2.x + pos2.width / 2 + window.scrollX,
-                pos2.y + pos2.height / 2 + window.scrollY
-            );
-            console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
-            try {
-                this.output.start();
-            } catch (e) {
-                console.warn(e);
+                let pos1 = this.outputTag.getBoundingClientRect();
+                let pos2 = node.inputTag.getBoundingClientRect();
+                this.outputLines[node.id] = drawLine(
+                    pos1.x + pos1.width / 2 + window.scrollX,
+                    pos1.y + pos1.height / 2 + window.scrollY,
+                    pos2.x + pos2.width / 2 + window.scrollX,
+                    pos2.y + pos2.height / 2 + window.scrollY
+                );
+                console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
+                try {
+                    this.output.start();
+                } catch (e) {
+                    console.warn(e);
+                }
             }
-        }
     }
 
     disconnect(node) {
@@ -659,7 +659,7 @@ class BufferConsumer {
         this.div.appendChild(inputTag);
         inputTag.addEventListener('drop', e => {
             let input = buffers[e.dataTransfer.getData('node')]
-            input.connect(this)
+            if (input instanceof BufferProducer) input.connect(this)
         });
         inputTag.addEventListener('dragover', e => {
             e.preventDefault();
@@ -669,7 +669,8 @@ class BufferConsumer {
         });
         if (isMobile) {
             inputTag.addEventListener('click', e => {
-                if (selectedOutput) {
+                console.log(selectedOutput)
+                if (selectedOutput && selectedOutput instanceof BufferProducer) {
                     selectedOutput.connect(this);
                     selectedOutput.outputTag.classList.remove('selected');
                     selectedOutput = null;
