@@ -255,6 +255,13 @@ class AudioNodeView {
                 delete settings[element.id]
             }
         }
+        for (const e in this.buffers) {
+            if (Object.hasOwnProperty.call(this.buffers, e)) {
+                const element = this.buffers[e];
+                element.disconnectAll();
+                delete buffers[element.id]
+            }
+        }
         document.querySelector('#workspace').removeChild(this.panel);
         nodes.delete(this);
     }
@@ -571,6 +578,13 @@ class BufferProducer {
         this.div.appendChild(text);
 
         buffers[this.id] = this;
+
+        if (isMobile) outputTag.addEventListener('click', e => {
+            if (selectedOutput)
+                selectedOutput.outputTag.classList.remove('selected');
+            selectedOutput = this;
+            outputTag.classList.add('selected');
+        });
     }
 
     connect(node) {
@@ -653,15 +667,15 @@ class BufferConsumer {
         inputTag.addEventListener('dblclick', e => {
             this.disconnectAll();
         });
-        // if (isMobile) {
-        //     inputTag.addEventListener('click', e => {
-        //         if (selectedOutput) {
-        //             selectedOutput.connect(this);
-        //             selectedOutput.outputTag.classList.remove('selected');
-        //             selectedOutput = null;
-        //         }
-        //     });
-        // }
+        if (isMobile) {
+            inputTag.addEventListener('click', e => {
+                if (selectedOutput) {
+                    selectedOutput.connect(this);
+                    selectedOutput.outputTag.classList.remove('selected');
+                    selectedOutput = null;
+                }
+            });
+        }
         this.inputTag = inputTag;
 
         let text = document.createElement('span');
@@ -672,7 +686,7 @@ class BufferConsumer {
     }
 
     onconnect(input) {
-        if(this.input) this.disconnectAll()
+        if (this.input) this.disconnectAll()
         this.input = input;
         this.updateLines()
     }
@@ -1563,7 +1577,7 @@ class BandpassFilterView extends AudioNodeView {
 
         let btn = document.createElement('button')
         btn.innerText = 'Update';
-        btn.addEventListener('click', () => {this.createFilter()})
+        btn.addEventListener('click', () => { this.createFilter() })
 
         this.panel.appendChild(btn)
         this.createFilter()

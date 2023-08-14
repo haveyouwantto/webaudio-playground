@@ -28,6 +28,7 @@ let defaultLocale = {
     "view.BandpassFilterView":"Bandpass Filter",
 
     "category.Generators": "Generators",
+    "category.Buffers": "Buffers",
     "category.Processors": "Processors",
     "category.Spatialization": "Spatialization",
     "category.AudioIO": "Audio I/O",
