@@ -56,6 +56,7 @@ if (ctx.audioWorklet)
     });
 
 let settings = {};
+let buffers = {};
 let nodes = new Set();
 
 let selectedOutput = null;
@@ -223,10 +224,15 @@ class AudioNodeView {
         nodes.add(this)
 
         this.settings = {};
+        this.buffers = {};
 
         const observer = new MutationObserver(() => {
             for (const setting in this.settings) {
                 const element = this.settings[setting];
+                element.updateLines();
+            }
+            for (const buffer in this.buffers) {
+                const element = this.buffers[buffer];
                 element.updateLines();
             }
         });
@@ -270,6 +276,18 @@ class AudioNodeView {
         let setting = new Setting(name, type, value, input, valChange, output);
         this.settings[name] = setting;
         this.panel.appendChild(setting.div);
+    }
+
+    addBufferConsumer(name, listener) {
+        let consumer = new BufferConsumer(name, listener);
+        this.buffers[name] = consumer;
+        this.panel.appendChild(consumer.div);
+    }
+
+    addBufferProducer(name) {
+        let producer = new BufferProducer(name);
+        this.buffers[name] = producer;
+        this.panel.appendChild(producer.div);
     }
 
     removeSetting(name) {
@@ -428,8 +446,6 @@ class Setting {
     }
 
     connect(node) {
-        console.log(this.outputs.includes(node));
-
         if (!this.outputs.includes(node)) {
             this.outputs.push(node);
             node.inputs.push(this);
@@ -519,6 +535,145 @@ class Setting {
             } catch (error) {
                 console.warn(error);
             }
+        }
+    }
+}
+
+class BufferProducer {
+    constructor(name) {
+        this.div = document.createElement('div');
+        this.div.className = 'setting';
+        this.id = generateUUID();
+        this.outputs = [];
+        this.outputLines = {};
+        this.name = name;
+
+        this.outputTag;
+
+        this.buffer = null;
+
+        let outputTag = document.createElement('div');
+        outputTag.className = 'buffer-producer';
+        outputTag.setAttribute('draggable', true);
+        outputTag.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('node', this.id);
+        });
+        outputTag.addEventListener('dblclick', e => {
+            // this.disconnectOut();
+        });
+
+        this.div.appendChild(outputTag);
+        this.outputTag = outputTag;
+
+        let text = document.createElement('span');
+        text.classList.add('settingText');
+        text.appendChild(createLocaleItem('setting.' + name));
+        this.div.appendChild(text);
+
+        buffers[this.id] = this;
+    }
+
+    connect(node) {
+        if (!this.outputs.includes(node)) {
+            this.outputs.push(node);
+            node.onconnect(this);
+
+            let pos1 = this.outputTag.getBoundingClientRect();
+            let pos2 = node.inputTag.getBoundingClientRect();
+            this.outputLines[node.id] = drawLine(
+                pos1.x + pos1.width / 2 + window.scrollX,
+                pos1.y + pos1.height / 2 + window.scrollY,
+                pos2.x + pos2.width / 2 + window.scrollX,
+                pos2.y + pos2.height / 2 + window.scrollY
+            );
+
+            if (this.buffer) node.receive(this.buffer)
+        }
+    }
+
+    send(buffer) {
+        for (const consumer of this.outputs) {
+            consumer.receive(buffer)
+        }
+        this.buffer = buffer;
+    }
+
+    updateLines() {
+        for (let node of this.outputs) {
+            try {
+                let pos1 = this.outputTag.getBoundingClientRect();
+                let pos2 = node.inputTag.getBoundingClientRect();
+                this.outputLines[node.id].setAttribute('x1', pos1.x + pos1.width / 2 + window.scrollX);
+                this.outputLines[node.id].setAttribute('y1', pos1.y + pos1.height / 2 + window.scrollY);
+                this.outputLines[node.id].setAttribute('x2', pos2.x + pos2.width / 2 + window.scrollX);
+                this.outputLines[node.id].setAttribute('y2', pos2.y + pos2.height / 2 + window.scrollY);
+            } catch (error) {
+                console.warn(error);
+            }
+        }
+    }
+}
+
+class BufferConsumer {
+    constructor(name, listener) {
+        this.div = document.createElement('div');
+        this.div.className = 'setting';
+        this.id = generateUUID();
+        this.input = null;
+        this.name = name;
+        this.listener = listener;
+
+        this.inputTag;
+
+        let inputTag = document.createElement('div');
+        inputTag.className = 'buffer-consumer';
+        this.div.appendChild(inputTag);
+        inputTag.addEventListener('drop', e => {
+            let input = buffers[e.dataTransfer.getData('node')]
+            input.connect(this)
+        });
+        inputTag.addEventListener('dragover', e => {
+            e.preventDefault();
+        });
+        inputTag.addEventListener('dblclick', e => {
+            // this.disconnectIn();
+        });
+        // if (isMobile) {
+        //     inputTag.addEventListener('click', e => {
+        //         if (selectedOutput) {
+        //             selectedOutput.connect(this);
+        //             selectedOutput.outputTag.classList.remove('selected');
+        //             selectedOutput = null;
+        //         }
+        //     });
+        // }
+        this.inputTag = inputTag;
+
+        let text = document.createElement('span');
+        text.classList.add('settingText');
+        text.appendChild(createLocaleItem('setting.' + name));
+        this.div.appendChild(text);
+    }
+
+    onconnect(input) {
+        this.input = input;
+    }
+
+    receive(buffer) {
+        this.listener(buffer);
+    }
+
+    updateLines() {
+
+        try {
+            let pos1 = this.outputTag.getBoundingClientRect();
+            let pos2 = this.input.inputTag.getBoundingClientRect();
+            this.outputLines[node.id].setAttribute('x1', pos1.x + pos1.width / 2 + window.scrollX);
+            this.outputLines[node.id].setAttribute('y1', pos1.y + pos1.height / 2 + window.scrollY);
+            this.outputLines[node.id].setAttribute('x2', pos2.x + pos2.width / 2 + window.scrollX);
+            this.outputLines[node.id].setAttribute('y2', pos2.y + pos2.height / 2 + window.scrollY);
+        } catch (error) {
+            console.warn(error);
         }
     }
 }
@@ -920,7 +1075,7 @@ class ConvolverNodeView extends AudioNodeView {
         super();
         this.buffer = null;
         this.initCanvas();
-        this.uploadBtn();
+        this.initNodes();
         this.drawMode = 0; // 0 = Impulse, 1 = Frequency
         this.frequencyResponse = null;
     }
@@ -1030,8 +1185,6 @@ class ConvolverNodeView extends AudioNodeView {
         }
         frequencyResponse = resampleArray(this.frequencyResponse[channel], this.canvas.width);
 
-        console.log(performance.now() - a);
-
 
         let canvasCtx = this.canvas.getContext('2d');
         canvasCtx.lineWidth = 1;
@@ -1040,7 +1193,6 @@ class ConvolverNodeView extends AudioNodeView {
         canvasCtx.strokeStyle = channelPalette[channel % channelPalette.length];
         let middle = this.canvas.height * 0.5;
         let step = this.canvas.height / 160;
-        console.log(step);
 
 
         for (var i = 0; i < this.canvas.width; i++) {
@@ -1059,32 +1211,21 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
 
-    uploadBtn() {
-        let input = document.createElement('input');
-        let node = ctx.createConvolver();
+    initNodes() {
 
-        input.type = 'file';
-        input.accept = 'audio/*, video/*';
-        input.style.display = 'block';
-        input.addEventListener('change', e => {
-            if (input.files[0]) {
-                var file = input.files[0];
-                var reader = new FileReader();
-                reader.onload = loadEvent => {
-                    var fileBuffer = loadEvent.target.result;
-                    ctx.decodeAudioData(fileBuffer).then(buffer => {
-                        node.buffer = buffer;
-                        this.buffer = buffer;
-                        this.frequencyResponse = null;
-                        this.updateGraph();
-                    });
-                };
-                reader.readAsArrayBuffer(file);
-            }
-        });
-        this.panel.appendChild(input);
+        this.addBufferConsumer("Kernel", buffer => this.setKernel(buffer))
 
-        this.addNewSetting('Node', '', null, node, null, node);
+        // let input = document.createElement('input');
+        this.node = ctx.createConvolver();
+
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+
+    setKernel(buffer) {
+        this.node.buffer = buffer;
+        this.buffer = buffer;
+        this.frequencyResponse = null;
+        this.updateGraph();
     }
 
     initCanvas() {
@@ -1339,6 +1480,52 @@ class ConditionalNodeView extends AudioNodeView {
         this.addNewSetting('IfGreater', '', null, this.c2);
         this.addNewSetting('IfLesser', '', null, this.c3);
         this.addNewSetting('Output', '', null, null, null, this.node);
+    }
+}
+
+class IIRFilterNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        const feedForward = [0.00020298, 0.0004059599, 0.00020298];
+        const feedBackward = [1.0126964558, -1.9991880801, 0.9873035442];
+
+        this.node = ctx.createIIRFilter(feedForward, feedBackward);
+        this.addNewSetting('Node', '', null, this.node, null, this.node);
+    }
+}
+
+class BufferFileSourceView extends AudioNodeView {
+    constructor() {
+        super();
+
+
+        let input = document.createElement('input');
+        let node = ctx.createConvolver();
+
+        input.type = 'file';
+        input.accept = 'audio/*, video/*';
+        input.style.display = 'block';
+        input.addEventListener('change', e => {
+            if (input.files[0]) {
+                var file = input.files[0];
+                var reader = new FileReader();
+                reader.onload = loadEvent => {
+                    var fileBuffer = loadEvent.target.result;
+                    ctx.decodeAudioData(fileBuffer).then(buffer => {
+                        this.buffers['File'].send(buffer)
+                        // node.buffer = buffer;
+                        // this.buffer = buffer;
+                        // this.frequencyResponse = null;
+                        // this.updateGraph();
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+        this.panel.appendChild(input);
+        this.addBufferProducer("File")
+
+        // this.addNewSetting('Node', '', null, node, null, node);
     }
 }
 
@@ -1617,8 +1804,8 @@ if (isMobile) {
             selectedPanel = null;
         }
     });
-}
 
-if (isMobile) window.visualViewport.onscroll = e => {
-    fs.followScreen();
+    window.visualViewport.onscroll = e => {
+        fs.followScreen();
+    }
 }

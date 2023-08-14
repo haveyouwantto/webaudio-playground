@@ -181,3 +181,55 @@ function resampleArray(array, desiredLength) {
 
     return result;
 }
+
+const windowFunctions = {
+    rectangular: (n, M) => 1,
+    hann: (n, M) => 0.5 * (1 - Math.cos((2 * Math.PI * n) / (M - 1))),
+    hamming: (n, M) => 0.54 - 0.46 * Math.cos((2 * Math.PI * n) / (M - 1)),
+    blackman: (n, M) =>
+        0.42 - 0.5 * Math.cos((2 * Math.PI * n) / (M - 1)) + 0.08 * Math.cos((4 * Math.PI * n) / (M - 1)),
+    bharris: (n, M) =>
+        0.35875 - 0.48829 * Math.cos((2 * Math.PI * n) / (M - 1)) +
+        0.14128 * Math.cos((4 * Math.PI * n) / (M - 1)) -
+        0.01168 * Math.cos((6 * Math.PI * n) / (M - 1)),
+};
+
+const sinc = (x) => {
+    if (x === 0) {
+        return 1;
+    }
+    return Math.sin(Math.PI * x) / (Math.PI * x);
+};
+
+
+function bandpass(taps, center, bw, windowType = "hamming", fs = 1) {
+    if (taps % 2 === 0) {
+        throw new Error("Number of taps should be odd.");
+    }
+
+    const nyquist = 0.5; // Nyquist frequency
+    const omegaC = (2 * Math.PI * center) / fs;
+    const omegaL = (2 * Math.PI * (center - bw / 2)) / fs;
+    const omegaH = (2 * Math.PI * (center + bw / 2)) / fs;
+
+    const windowFn = windowFunctions[windowType.toLowerCase()];
+    if (!windowFn) {
+        throw new Error("Invalid window type.");
+    }
+
+    const h = new Array(taps).fill(0).map((_, n) => {
+        const nOffset = n - (taps - 1) / 2;
+        if (nOffset === 0) {
+            return omegaH / Math.PI - omegaL / Math.PI;
+        }
+        return (
+            ((Math.sin(omegaH * nOffset) - Math.sin(omegaL * nOffset)) / (Math.PI * nOffset)) *
+            windowFn(n, taps)
+        );
+    });
+
+    const hMax = h.reduce((curr, value) => Math.max(curr, Math.abs(value)), 0);
+    const normalizedH = h.map((value) => value / hMax);
+
+    return normalizedH;
+}
