@@ -334,7 +334,7 @@ class Setting {
             this.div.appendChild(inputTag);
             inputTag.addEventListener('drop', e => {
                 let node = settings[e.dataTransfer.getData('node')];
-                if(node instanceof Setting) node.connect(this);
+                if (node instanceof Setting) node.connect(this);
             });
             inputTag.addEventListener('dragover', e => {
                 e.preventDefault();
@@ -453,26 +453,26 @@ class Setting {
     }
 
     connect(node) {
-            if (!this.outputs.includes(node)) {
-                this.outputs.push(node);
-                node.inputs.push(this);
-                this.output.connect(node.input);
+        if (!this.outputs.includes(node)) {
+            this.outputs.push(node);
+            node.inputs.push(this);
+            this.output.connect(node.input);
 
-                let pos1 = this.outputTag.getBoundingClientRect();
-                let pos2 = node.inputTag.getBoundingClientRect();
-                this.outputLines[node.id] = drawLine(
-                    pos1.x + pos1.width / 2 + window.scrollX,
-                    pos1.y + pos1.height / 2 + window.scrollY,
-                    pos2.x + pos2.width / 2 + window.scrollX,
-                    pos2.y + pos2.height / 2 + window.scrollY
-                );
-                console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
-                try {
-                    this.output.start();
-                } catch (e) {
-                    console.warn(e);
-                }
+            let pos1 = this.outputTag.getBoundingClientRect();
+            let pos2 = node.inputTag.getBoundingClientRect();
+            this.outputLines[node.id] = drawLine(
+                pos1.x + pos1.width / 2 + window.scrollX,
+                pos1.y + pos1.height / 2 + window.scrollY,
+                pos2.x + pos2.width / 2 + window.scrollX,
+                pos2.y + pos2.height / 2 + window.scrollY
+            );
+            console.log(`Connected ${this.output.constructor.name} to ${node.input.constructor.name}`);
+            try {
+                this.output.start();
+            } catch (e) {
+                console.warn(e);
             }
+        }
     }
 
     disconnect(node) {
@@ -702,7 +702,8 @@ class BufferConsumer {
     }
 
     disconnectAll() {
-        this.input.disconnect(this)
+        if (this.input)
+            this.input.disconnect(this)
     }
 }
 
@@ -1310,8 +1311,6 @@ class SpectrumViewV2 extends AudioNodeView {
         this.node2 = ctx.createAnalyser();
         this.node.smoothingTimeConstant = 0;
         this.node.connect(this.node2);
-        this.node.fftSize = roundDownToPowerOfTwo(ctx.sampleRate / 8);
-        this.node2.fftSize = roundDownToPowerOfTwo(ctx.sampleRate / 8);
 
         this.canvasContainer = document.createElement('div');
         this.canvas = document.createElement('canvas');
@@ -1326,7 +1325,20 @@ class SpectrumViewV2 extends AudioNodeView {
             this.maximized = !this.maximized;
             this.setMaximized(this.maximized);
         });
+
+        const fftsize = this.determinateFFTSize();
+        this.node.fftSize = fftsize;
+        this.node2.fftSize = fftsize;
+
         this.update();
+    }
+
+    determinateFFTSize() {
+        console.log(this)
+        let fftsize = roundDownToPowerOfTwo(this.canvas.width * 8)
+        let max = roundDownToPowerOfTwo(ctx.sampleRate / 8);
+        let min = 512;
+        return Math.max(Math.min(fftsize, max), min);
     }
 
     update() {
@@ -1410,6 +1422,9 @@ class SpectrumViewV2 extends AudioNodeView {
             this.canvas.width = 300;
             this.canvas.height = 300;
         }
+        const fftsize = this.determinateFFTSize();
+        this.node.fftSize = fftsize;
+        this.node2.fftSize = fftsize;
         this.update();
     }
 }
