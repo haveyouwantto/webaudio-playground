@@ -204,7 +204,7 @@ const sinc = (x) => {
 
 function bandpass(taps, center, bw, windowType = "hamming", fs = 1) {
     if (taps % 2 === 0) {
-        throw new Error("Number of taps should be odd.");
+        taps += 1;
     }
 
     const nyquist = 0.5; // Nyquist frequency

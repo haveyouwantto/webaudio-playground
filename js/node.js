@@ -592,10 +592,10 @@ class BufferProducer {
     }
 
     send(buffer) {
+        this.buffer = buffer;
         for (const consumer of this.outputs) {
             consumer.receive(buffer)
         }
-        this.buffer = buffer;
     }
 
     updateLines() {
@@ -664,17 +664,7 @@ class BufferConsumer {
     }
 
     updateLines() {
-
-        try {
-            let pos1 = this.outputTag.getBoundingClientRect();
-            let pos2 = this.input.inputTag.getBoundingClientRect();
-            this.outputLines[node.id].setAttribute('x1', pos1.x + pos1.width / 2 + window.scrollX);
-            this.outputLines[node.id].setAttribute('y1', pos1.y + pos1.height / 2 + window.scrollY);
-            this.outputLines[node.id].setAttribute('x2', pos2.x + pos2.width / 2 + window.scrollX);
-            this.outputLines[node.id].setAttribute('y2', pos2.y + pos2.height / 2 + window.scrollY);
-        } catch (error) {
-            console.warn(error);
-        }
+        this.input.updateLines()
     }
 }
 
@@ -1073,7 +1063,6 @@ class ConstantSourceView extends AudioNodeView {
 class ConvolverNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.buffer = null;
         this.initCanvas();
         this.initNodes();
         this.drawMode = 0; // 0 = Impulse, 1 = Frequency
@@ -1085,13 +1074,13 @@ class ConvolverNodeView extends AudioNodeView {
         try {
             switch (this.drawMode) {
                 case 0:
-                    for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
+                    for (let channel = 0; channel < this.node.buffer.numberOfChannels; channel++) {
                         this.drawImpulse(channel);
                     }
                     break;
                 case 1:
                     this.drawLines();
-                    for (let channel = 0; channel < this.buffer.numberOfChannels; channel++) {
+                    for (let channel = 0; channel < this.node.buffer.numberOfChannels; channel++) {
                         this.drawFrequency(channel);
                     }
                     break;
@@ -1144,7 +1133,7 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
     drawImpulse(channel) {
-        let buffer = this.buffer.getChannelData(channel);
+        let buffer = this.node.buffer.getChannelData(channel);
         let canvasCtx = this.canvas.getContext('2d');
         canvasCtx.fillStyle = 'rgb(240, 240, 240)';
         canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -1171,7 +1160,7 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
     drawFrequency(channel) {
-        let buffer = this.buffer.getChannelData(channel);
+        let buffer = this.node.buffer.getChannelData(channel);
 
         let a = performance.now();
         let frequencyResponse;
@@ -1222,8 +1211,8 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
     setKernel(buffer) {
+        console.log(buffer)
         this.node.buffer = buffer;
-        this.buffer = buffer;
         this.frequencyResponse = null;
         this.updateGraph();
     }
@@ -1498,7 +1487,6 @@ class BufferFileSourceView extends AudioNodeView {
     constructor() {
         super();
 
-
         let input = document.createElement('input');
         let node = ctx.createConvolver();
 
@@ -1526,6 +1514,50 @@ class BufferFileSourceView extends AudioNodeView {
         this.addBufferProducer("File")
 
         // this.addNewSetting('Node', '', null, node, null, node);
+    }
+}
+
+class BandpassFilterView extends AudioNodeView {
+    constructor() {
+        super();
+
+        this.config = {
+            taps:{
+               value: 101
+            },
+            center:{
+                value: 4000
+            },
+            bw:{
+                value: 1000
+            }
+        }
+
+        this.addNewSetting('Taps', 'num', 101,this.config.taps)
+        this.addNewSetting('Center Frequency', 'num', 4000,this.config.center)
+        this.addNewSetting('Bandwidth', 'num', 1000,this.config.bw)
+
+        this.addBufferProducer('Impulse')
+
+        let btn = document.createElement('button')
+        btn.innerText = 'Update';
+        btn.addEventListener('click', () => {
+            let buffer = new AudioBuffer({ length: 
+               parseInt( this.settings['Taps'].getValue()), sampleRate: ctx.sampleRate })
+
+            let impulse = bandpass(
+                parseInt(this.settings['Taps'].getValue()),
+                parseFloat(this.settings['Center Frequency'].getValue()),
+                parseFloat(this.settings['Bandwidth'].getValue()),
+                "hamming",
+                ctx.sampleRate);
+
+            buffer.getChannelData(0).set(impulse);
+
+            this.buffers['Impulse'].send(buffer);
+        })
+
+        this.panel.appendChild(btn)
     }
 }
 
