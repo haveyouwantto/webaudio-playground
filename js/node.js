@@ -1357,6 +1357,17 @@ class SpectrumViewV2 extends AudioNodeView {
             canvasCtx.fillStyle = 'rgb(0, 0, 0)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Frequency lines
+
+            let nyquist = ctx.sampleRate / 2;
+            for (let i = 4000; i < nyquist; i += 4000) {
+                let x = i / nyquist * this.canvas.width;
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(x, 0);
+                canvasCtx.lineTo(x, this.canvas.height);
+                canvasCtx.stroke();
+            }
+
             const barWidth = buffer.length / canvas.width;
             let posX = 0;
             canvasCtx.strokeStyle = '#ffffff';
