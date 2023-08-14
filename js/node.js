@@ -1946,3 +1946,26 @@ if (isMobile) {
         fs.followScreen();
     }
 }
+
+const wakeLockSupported = 'wakeLock' in navigator;
+
+function acquireWakelock() {
+    if (wakeLockSupported) {
+        try {
+            navigator.wakeLock.request('screen').then(lock => {
+                wakeLock = lock;
+                lock.addEventListener('release', e => {
+                    console.log("wakelock released");
+                })
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
+
+document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === 'visible') {
+        acquireWakelock();
+    }
+});
