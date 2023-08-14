@@ -1737,7 +1737,7 @@ function load(save_object) {
 }
 
 let suspend = true;
-html.addEventListener('contextmenu', e => {
+document.getElementById('context').addEventListener('contextmenu', e => {
     e.preventDefault(); // Prevent the default right-click context menu
 
     if (suspend) {
