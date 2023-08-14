@@ -559,7 +559,7 @@ class BufferProducer {
             e.dataTransfer.setData('node', this.id);
         });
         outputTag.addEventListener('dblclick', e => {
-            // this.disconnectOut();
+            this.disconnectAll();
         });
 
         this.div.appendChild(outputTag);
@@ -612,6 +612,21 @@ class BufferProducer {
             }
         }
     }
+
+    disconnect(node) {
+        this.outputs = this.outputs.filter(item => item !== node);
+        node.input = null;
+
+        document.querySelector('#lines').removeChild(this.outputLines[node.id]);
+        delete this.outputLines[node.id];
+        console.log(`Disconnected ${this.constructor.name} from ${node.constructor.name}`);
+    }
+
+    disconnectAll() {
+        for (const consumer of this.outputs) {
+            this.disconnect(consumer)
+        }
+    }
 }
 
 class BufferConsumer {
@@ -636,7 +651,7 @@ class BufferConsumer {
             e.preventDefault();
         });
         inputTag.addEventListener('dblclick', e => {
-            // this.disconnectIn();
+            this.disconnectAll();
         });
         // if (isMobile) {
         //     inputTag.addEventListener('click', e => {
@@ -653,10 +668,13 @@ class BufferConsumer {
         text.classList.add('settingText');
         text.appendChild(createLocaleItem('setting.' + name));
         this.div.appendChild(text);
+        buffers[this.id] = this;
     }
 
     onconnect(input) {
+        if(this.input) this.disconnectAll()
         this.input = input;
+        this.updateLines()
     }
 
     receive(buffer) {
@@ -664,7 +682,12 @@ class BufferConsumer {
     }
 
     updateLines() {
-        this.input.updateLines()
+        if (this.input)
+            this.input.updateLines()
+    }
+
+    disconnectAll() {
+        this.input.disconnect(this)
     }
 }
 
@@ -1202,7 +1225,7 @@ class ConvolverNodeView extends AudioNodeView {
 
     initNodes() {
 
-        this.addBufferConsumer("Kernel", buffer => this.setKernel(buffer))
+        this.addBufferConsumer("Convolution Kernel", buffer => this.setKernel(buffer))
 
         // let input = document.createElement('input');
         this.node = ctx.createConvolver();
@@ -1211,7 +1234,6 @@ class ConvolverNodeView extends AudioNodeView {
     }
 
     setKernel(buffer) {
-        console.log(buffer)
         this.node.buffer = buffer;
         this.frequencyResponse = null;
         this.updateGraph();
@@ -1483,7 +1505,7 @@ class IIRFilterNodeView extends AudioNodeView {
     }
 }
 
-class BufferFileSourceView extends AudioNodeView {
+class FileBufferSourceView extends AudioNodeView {
     constructor() {
         super();
 
@@ -1522,42 +1544,47 @@ class BandpassFilterView extends AudioNodeView {
         super();
 
         this.config = {
-            taps:{
-               value: 101
+            taps: {
+                value: 101
             },
-            center:{
+            center: {
                 value: 4000
             },
-            bw:{
+            bw: {
                 value: 1000
             }
         }
 
-        this.addNewSetting('Taps', 'num', 101,this.config.taps)
-        this.addNewSetting('Center Frequency', 'num', 4000,this.config.center)
-        this.addNewSetting('Bandwidth', 'num', 1000,this.config.bw)
+        this.addNewSetting('Taps', 'num', 101, this.config.taps)
+        this.addNewSetting('Center Frequency', 'num', 4000, this.config.center)
+        this.addNewSetting('Bandwidth', 'num', 1000, this.config.bw)
 
         this.addBufferProducer('Impulse')
 
         let btn = document.createElement('button')
         btn.innerText = 'Update';
-        btn.addEventListener('click', () => {
-            let buffer = new AudioBuffer({ length: 
-               parseInt( this.settings['Taps'].getValue()), sampleRate: ctx.sampleRate })
-
-            let impulse = bandpass(
-                parseInt(this.settings['Taps'].getValue()),
-                parseFloat(this.settings['Center Frequency'].getValue()),
-                parseFloat(this.settings['Bandwidth'].getValue()),
-                "hamming",
-                ctx.sampleRate);
-
-            buffer.getChannelData(0).set(impulse);
-
-            this.buffers['Impulse'].send(buffer);
-        })
+        btn.addEventListener('click', () => {this.createFilter()})
 
         this.panel.appendChild(btn)
+        this.createFilter()
+    }
+
+    createFilter() {
+        let buffer = new AudioBuffer({
+            length:
+                parseInt(this.settings['Taps'].getValue()), sampleRate: ctx.sampleRate
+        })
+
+        let impulse = bandpass(
+            parseInt(this.settings['Taps'].getValue()),
+            parseFloat(this.settings['Center Frequency'].getValue()),
+            parseFloat(this.settings['Bandwidth'].getValue()),
+            "hamming",
+            ctx.sampleRate);
+
+        buffer.getChannelData(0).set(impulse);
+
+        this.buffers['Impulse'].send(buffer);
     }
 }
 
@@ -1565,7 +1592,8 @@ class BandpassFilterView extends AudioNodeView {
 function save() {
     let map = {
         "nodes": [],
-        "settings": {}
+        "settings": {},
+        "buffers": {}
     };
 
     for (const setting in settings) {
@@ -1581,15 +1609,34 @@ function save() {
         map.settings[setting] = n;
     }
 
+    for (const buffer in buffers) {
+        let s = buffers[buffer];
+        let n = {}
+        if (s instanceof BufferProducer) {
+            n.outputs = [];
+            n.type = 'prod';
+            for (const id in s.outputLines) {
+                n.outputs.push(id);
+            }
+        } else {
+            n.type = 'cons'
+        }
+        map.buffers[buffer] = n;
+    }
+
     for (const node of nodes) {
         let n = {
             "type": node.constructor.name,
             "x": node.x,
             "y": node.y,
-            "settings": {}
+            "settings": {},
+            "buffers": {}
         }
         for (let setting in node.settings) {
             n.settings[setting] = node.settings[setting].id;
+        }
+        for (let buffer in node.buffers) {
+            n.buffers[buffer] = node.buffers[buffer].id;
         }
 
         map.nodes.push(n);
@@ -1621,6 +1668,17 @@ function load(save_object) {
                 ids[node.settings[name]] = setting;
             }
         }
+
+        for (const name in node.buffers) {
+            if (Object.hasOwnProperty.call(node.buffers, name)) {
+                const saved_buffer = save_object.buffers[node.buffers[name]];
+                console.log(saved_buffer)
+                const buffer = view.buffers[name]
+                console.log(buffer)
+
+                ids[node.buffers[name]] = buffer;
+            }
+        }
     }
 
     for (const id in save_object.settings) {
@@ -1632,6 +1690,21 @@ function load(save_object) {
                     ids[id].connect(ids[output]);
                 } catch (error) {
                     console.warn(error);
+                }
+            }
+        }
+    }
+
+    for (const id in save_object.buffers) {
+        if (Object.hasOwnProperty.call(save_object.buffers, id)) {
+            if (save_object.buffers[id].type == 'prod') {
+                const outputs = save_object.buffers[id].outputs;
+                for (const output of outputs) {
+                    try {
+                        ids[id].connect(ids[output]);
+                    } catch (error) {
+                        console.warn(error);
+                    }
                 }
             }
         }

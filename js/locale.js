@@ -24,6 +24,8 @@ let defaultLocale = {
     "view.ControlsView": "Controls",
     "view.BitcrusherNodeView":"Bit Crusher",
     "view.ConditionalNodeView": "Conditional Routing",
+    "view.FileBufferSourceView": "File Buffer Source",
+    "view.BandpassFilterView":"Bandpass Filter",
 
     "category.Generators": "Generators",
     "category.Processors": "Processors",
@@ -66,6 +68,12 @@ let defaultLocale = {
     "setting.Threshold":"Threshold",
     "setting.IfGreater":"If Greater",
     "setting.IfLesser":"If Lesser",
+    "setting.Convolution Kernel":"Convolution Kernel",
+    "setting.File": "File",
+    "setting.Taps":"Taps",
+    "setting.Center Frequency": "Center Frequency",
+    "setting.Bandwidth":"Bandwidth",
+    "setting.Impulse":"Impulse",
 
     "operation.save": "Save",
     "operation.load": "Load",

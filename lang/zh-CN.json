@@ -24,6 +24,8 @@
     "view.ControlsView": "控制",
     "view.BitcrusherNodeView": "位深压缩器",
     "view.ConditionalNodeView": "条件路由",
+    "view.FileBufferSourceView": "文件音频数组",
+    "view.BandpassFilterView":"带通滤波器",
 
     "category.Generators": "生成器",
     "category.Processors": "处理器",
@@ -66,6 +68,12 @@
     "setting.Threshold": "阈值",
     "setting.IfGreater": "如果大于",
     "setting.IfLesser": "如果小于",
+    "setting.Convolution Kernel": "卷积核",
+    "setting.File": "文件",
+    "setting.Taps": "抽头",
+    "setting.Center Frequency": "中心频率",
+    "setting.Bandwidth": "带宽",
+    "setting.Impulse": "脉冲",
 
     "operation.save":"保存",
     "operation.load":"加载",
