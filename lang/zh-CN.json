@@ -28,6 +28,7 @@
     "view.BandpassFilterView":"带通滤波器",
 
     "category.Generators": "生成器",
+    "category.Buffers": "音频数组",
     "category.Processors": "处理器",
     "category.Spatialization": "空间化",
     "category.AudioIO": "音频输入/输出",

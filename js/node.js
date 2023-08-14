@@ -1730,6 +1730,13 @@ html.addEventListener('contextmenu', e => {
             ]
         },
         {
+            category: 'Buffers',
+            items: [
+                { view: FileBufferSourceView },
+                { view: BandpassFilterView }
+            ]
+        },
+        {
             category: 'Processors',
             items: [
                 { view: GainNodeView },
