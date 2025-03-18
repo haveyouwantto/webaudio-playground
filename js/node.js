@@ -1629,6 +1629,16 @@ class BandpassFilterView extends AudioNodeView {
     }
 }
 
+class ComplexSineNodeView extends AudioNodeView {
+    constructor() {
+        super();
+        this.node = new AudioWorkletNode(ctx, "complex-sine-processor");
+        let freq = this.node.parameters.get("frequency");
+        this.addNewSetting('Frequency', 'num', 440, freq, freq)
+        this.addNewSetting('Node', '', null, null, null, this.node);
+    }
+}
+
 // Saving
 function save() {
     let map = {
@@ -1767,7 +1777,8 @@ document.getElementById('context').addEventListener('contextmenu', e => {
             items: [
                 { view: ConstantSourceView },
                 { view: OscillatorNodeView },
-                { view: NoiseGeneratorView }
+                { view: NoiseGeneratorView },
+                { view: ComplexSineNodeView }
             ]
         },
         {
