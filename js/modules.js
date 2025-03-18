@@ -108,41 +108,47 @@ class ConditionalProcessor extends AudioWorkletProcessor {
 }
 
 class ComplexSineProcessor extends AudioWorkletProcessor {
-  static get parameterDescriptors() {
-    return [{
-      name: 'frequency',
-      defaultValue: 440,
-      minValue: 20,
-      maxValue: 20000
-    }];
-  }
-
-  constructor() {
-    super();
-    this.phase = 0;
-    this.sampleRate = sampleRate;
-  }
-
-  process(inputs, outputs, parameters) {
-    const output = outputs[0];
-    const leftChannel = output[0]; // 实部
-    const rightChannel = output[1]; // 虚部
-    const frequency = parameters.frequency[0];
-    const omega = 2 * Math.PI * frequency / this.sampleRate;
-
-    for (let i = 0; i < leftChannel.length; i++) {
-      const real = Math.cos(this.phase);
-      const imag = Math.sin(this.phase);
-
-      leftChannel[i] = real;
-      rightChannel[i] = imag;
-
-      this.phase += omega;
+    static get parameterDescriptors() {
+      return [{
+        name: 'frequency',
+        defaultValue: 440,
+        minValue: 20,
+        maxValue: 20000,
+        automationRate: 'a-rate' // 关键：指定 automationRate 为 'a-rate'
+      }];
     }
-
-    return true;
+  
+    constructor() {
+      super();
+      this.phase = 0;
+      this.sampleRate = sampleRate;
+    }
+  
+    process(inputs, outputs, parameters) {
+      const output = outputs[0];
+      // 确保是双声道输出
+      const leftChannel = output[0]; // 实部
+      const rightChannel = output[1]; // 虚部
+      const frequencies = parameters.frequency; // 获取频率数组，因为是 a-rate
+    //   console.log(frequencies)
+  
+      for (let i = 0; i < leftChannel.length; i++) {
+        const frequency = frequencies[i] ?? frequencies[0]; // 获取当前帧的频率
+        const omega = 2 * Math.PI * frequency / this.sampleRate;
+        
+        const real = Math.cos(this.phase);
+        const imag = Math.sin(this.phase);
+  
+        leftChannel[i] = real;
+        rightChannel[i] = imag;
+        
+        this.phase += omega;
+        //this.phase %= (2 * Math.PI); // 周期重置
+      }
+  
+      return true;
+    }
   }
-}
 
 
 

@@ -1632,7 +1632,7 @@ class BandpassFilterView extends AudioNodeView {
 class ComplexSineNodeView extends AudioNodeView {
     constructor() {
         super();
-        this.node = new AudioWorkletNode(ctx, "complex-sine-processor");
+        this.node = new AudioWorkletNode(ctx, "complex-sine-processor", {outputChannelCount:[2]});
         let freq = this.node.parameters.get("frequency");
         this.addNewSetting('Frequency', 'num', 440, freq, freq)
         this.addNewSetting('Node', '', null, null, null, this.node);
